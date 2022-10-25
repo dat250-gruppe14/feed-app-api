@@ -17,10 +17,24 @@ public class PollController : ControllerBase
 	_pollService = pollService;	
     }
 
-    [HttpGet(Name = "GetPollById")]
-    public Poll GetPollById()
+    [HttpGet(Name = "GetPolls")]
+    public IEnumerable<Poll> GetPolls()
     {
-	var poll = _pollService.getPollById("a");
+	var poll = _pollService.getPolls();
+	return poll?.ToList() ?? Enumerable.Empty<Poll>();
+    }
+
+    [HttpGet("{id}", Name = "GetPollById")]
+    public Poll? GetPollById([FromRoute] string id)
+    {
+	var poll = _pollService.getPollById(id);
+	return poll;
+    }
+
+    [HttpPost(Name = "createPoll")]
+    public Poll CreatePoll([FromBody] CreatePollRequest createPollRequest)
+    {
+	var poll = _pollService.createPoll(createPollRequest);
 	return poll;
     }
 }
