@@ -30,7 +30,8 @@ public class PollService : IPollService
     public Poll createPoll(CreatePollRequest request)
     {
         _context.Database.EnsureCreated();
-        var poll = new Poll();
+ 	var poll = new Poll();
+ 	var fooDto = mapper.Map<Poll>(request);
         poll.Id = Guid.NewGuid().ToString();
 
         poll.Name = request.Name;
