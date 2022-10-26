@@ -2,6 +2,8 @@ using FeedAppApi.Proxies.Data;
 using FeedAppApi.Services;
 using Microsoft.EntityFrameworkCore;
 
+var  webClientOrigins = "_webClientOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,7 +16,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: webClientOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://localhost:3000",
+                                              "https://localhost:3000");
+                      });
+});
+
 var app = builder.Build();
+
+app.UseCors(webClientOrigins);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
