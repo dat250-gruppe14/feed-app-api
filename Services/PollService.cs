@@ -1,6 +1,6 @@
-
-using FeedAppApi.Models;
+using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FeedAppApi.Services;
 
@@ -13,33 +13,29 @@ public class PollService : IPollService
         _context = context;
     }
 
-    public IEnumerable<Poll>? getPolls()
+    public async Task<IEnumerable<Poll>> GetPolls()
     {
-        var poll = _context.Polls?.ToList();
+        var polls = await _context.Polls.ToListAsync();
+        // TODO: Filtrer etter access
+        return polls;
+    }
 
+    public async Task<Poll?> GetPollByPincode(string pincode)
+    {
+        var poll = await _context.Polls.FirstOrDefaultAsync(p => p.Pincode == pincode);
         return poll;
     }
 
-    public Poll? getPollById(string id)
+    public async Task<Poll> CreatePoll(Poll poll)
     {
-        var poll = _context.Polls?.FirstOrDefault(poll => poll.Id == id);
-
-        return poll;
-    }
-
-    public Poll createPoll(CreatePollRequest request)
-    {
-        _context.Database.EnsureCreated();
-        var poll = new Poll();
-        poll.Id = Guid.NewGuid().ToString();
-
-        poll.Name = request.Name;
-        poll.Question = request.Question;
-
-        _context.Polls?.Add(poll);
-        _context.SaveChanges();
-
-        return poll;
+        // TODO: Autogenerer pin
+        poll.Pincode = "919191";
+        poll.CreatedTime = DateTime.Now.ToUniversalTime();
+        
+        // TODO: Catch DbUpdateException
+        var createdPoll = _context.Polls.Add(poll);
+        await _context.SaveChangesAsync();
+        return createdPoll.Entity;
     }
 }
 
