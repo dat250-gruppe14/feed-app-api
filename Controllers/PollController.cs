@@ -1,40 +1,55 @@
-using FeedAppApi.Models;
+using System.Net;
+using FeedAppApi.Errors;
+using FeedAppApi.Mappers;
+using FeedAppApi.Models.Web;
 using FeedAppApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeedAppApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class PollController : ControllerBase
 {
     private readonly ILogger<PollController> _logger;
     private readonly IPollService _pollService;
+    private readonly IWebMapper _webMapper;
+    
+    // Temporary. UserId should come from JWT token?
+    private readonly Guid TEMP_USER = Guid.Parse("88d1bef4-3a48-4476-8b20-2662cb795c9a");
 
-    public PollController(ILogger<PollController> logger, IPollService pollService)
+    public PollController(ILogger<PollController> logger, IPollService pollService, IWebMapper webMapper)
     {
         _logger = logger;
-	_pollService = pollService;	
+		_pollService = pollService;
+		_webMapper = webMapper;
     }
 
     [HttpGet(Name = "GetPolls")]
-    public IEnumerable<Poll> GetPolls()
+    public async Task<IActionResult> GetPolls()
     {
-	var poll = _pollService.getPolls();
-	return poll?.ToList() ?? Enumerable.Empty<Poll>();
+		var polls = await _pollService.GetPolls();
+		return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, TEMP_USER)));
     }
 
-    [HttpGet("{id}", Name = "GetPollById")]
-    public Poll? GetPollById([FromRoute] string id)
+    [HttpGet("{pincode}", Name = "GetPollById")]
+    public async Task<IActionResult> GetPollById([FromRoute] string pincode)
     {
-	var poll = _pollService.getPollById(id);
-	return poll;
+	    var poll = await _pollService.GetPollByPincode(pincode);
+	    return poll != null
+			// TODO: Get userId from header and throw into mapper
+		    ? Ok(_webMapper.MapPollToWeb(poll, TEMP_USER))
+		    : NotFound(new ApiErrorResponse
+		    {
+			    Status = HttpStatusCode.NotFound,
+			    Message = $"Poll with pincode {pincode} doesn't exist"
+		    });
     }
 
-    [HttpPost(Name = "createPoll")]
-    public Poll CreatePoll([FromBody] CreatePollRequest createPollRequest)
+    [HttpPost(Name = "CreatePoll")]
+    public async Task<IActionResult> CreatePoll([FromBody] PollCreateRequest pollCreateRequest)
     {
-	var poll = _pollService.createPoll(createPollRequest);
-	return poll;
+		var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest));
+		return Ok(poll);
     }
 }

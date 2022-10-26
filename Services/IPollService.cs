@@ -1,10 +1,9 @@
-
-using FeedAppApi.Models;
+using FeedAppApi.Models.Entities;
 
 namespace FeedAppApi.Services;
 
 public interface IPollService {
-	public IEnumerable<Poll>? getPolls();
-	public Poll? getPollById(string id);
-	public Poll createPoll(CreatePollRequest request);
+	public Task<IEnumerable<Poll>> GetPolls();
+	public Task<Poll?> GetPollByPincode(string pincode);
+	public Task<Poll> CreatePoll(Poll poll);
 }
