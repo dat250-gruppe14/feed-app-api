@@ -1,5 +1,6 @@
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
+using FeedAppApi.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace FeedAppApi.Services;
@@ -7,23 +8,23 @@ namespace FeedAppApi.Services;
 public class PollService : IPollService
 {
     private readonly DataContext _context;
+    private readonly IPollUtils _pollUtils;
 
-    public PollService(DataContext context)
+    public PollService(DataContext context, IPollUtils pollUtils)
     {
         _context = context;
+        _pollUtils = pollUtils;
     }
 
-    public async Task<IEnumerable<Poll>> GetPolls()
+    public async Task<IEnumerable<Poll>> GetPolls(Guid userId) // TODO: Take in User-object, not id
     {
-        var polls = await _context.Polls.ToListAsync();
-        // TODO: Filtrer etter access
-        return polls;
+        var user = await _context.Users.FindAsync(userId); // TODO: Remove
+        return await _pollUtils.GetOngoingPollsAuth(_context, user);
     }
 
     public async Task<Poll?> GetPollByPincode(string pincode)
     {
-        var poll = await _context.Polls.FirstOrDefaultAsync(p => p.Pincode == pincode);
-        return poll;
+        return await _context.Polls.FirstOrDefaultAsync(p => p.Pincode == pincode);
     }
 
     public async Task<Poll> CreatePoll(Poll poll)

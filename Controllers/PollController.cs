@@ -28,12 +28,12 @@ public class PollController : ControllerBase
     [HttpGet(Name = "GetPolls")]
     public async Task<IActionResult> GetPolls()
     {
-		var polls = await _pollService.GetPolls();
+		var polls = await _pollService.GetPolls(TEMP_USER);
 		return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, TEMP_USER)));
     }
 
-    [HttpGet("{pincode}", Name = "GetPollById")]
-    public async Task<IActionResult> GetPollById([FromRoute] string pincode)
+    [HttpGet("{pincode}", Name = "GetPollByPincode")]
+    public async Task<IActionResult> GetPollByPincode([FromRoute] string pincode)
     {
 	    var poll = await _pollService.GetPollByPincode(pincode);
 	    return poll != null
