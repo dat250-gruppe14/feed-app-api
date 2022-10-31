@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using FeedAppApi.Enums;
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
@@ -33,9 +34,10 @@ public class PollUtils : IPollUtils
         // Not logged in user (anonymous)
         if (user == null)
         {
-            return await context.Polls
-                .Where(poll => PollIsPublic(poll) && PollIsActive(poll))
-                .ToListAsync();
+            return context.Polls
+                .Where(PollIsPublic).AsEnumerable()
+                .Where(PollIsActive)
+                .ToList();
         }
 
         // Admin
@@ -45,9 +47,10 @@ public class PollUtils : IPollUtils
         }
 
         // Logged in user
-        return await context.Polls
-            .Where(poll => (PollIsPublic(poll) && PollIsActive(poll)) || YouOwnThePoll(poll, user.Id))
-            .ToListAsync();
+        // TODO: Can we filter on db-call instead after fetching?
+        return context.Polls
+            .ToList()
+            .Where(poll => (PollIsPublic(poll) && PollIsActive(poll)) || YouOwnThePoll(poll, user.Id));
     }
 
     private Func<Poll, bool> PollIsPublic = poll => poll.Access == PollAccess.Public;
@@ -57,7 +60,7 @@ public class PollUtils : IPollUtils
     private bool PollIsActive(Poll poll)
     {
         var pollHasStarted = poll.StartTime < DateTime.Now;
-        if (!pollHasStarted) return false;
+        if (!pollHasStarted) return true;
 
         var pollIsAlwaysOpen = poll.EndTime == null;
         if (pollIsAlwaysOpen) return true;

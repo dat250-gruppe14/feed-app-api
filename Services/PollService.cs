@@ -16,9 +16,8 @@ public class PollService : IPollService
         _pollUtils = pollUtils;
     }
 
-    public async Task<IEnumerable<Poll>> GetPolls(Guid userId) // TODO: Take in User-object, not id
+    public async Task<IEnumerable<Poll>> GetPolls(User? user)
     {
-        var user = await _context.Users.FindAsync(userId); // TODO: Remove
         return await _pollUtils.GetOngoingPollsAuth(_context, user);
     }
 

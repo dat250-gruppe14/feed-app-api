@@ -1,14 +1,39 @@
+using System.Text;
 using FeedAppApi.Mappers;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Services;
 using FeedAppApi.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var  webClientOrigins = "_webClientOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Authentication (https://www.infoworld.com/article/3669188/how-to-implement-jwt-authentication-in-aspnet-core-6.html)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = false,
+        ValidateIssuerSigningKey = true
+    };
+});
+builder.Services.AddAuthorization();
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -17,6 +42,7 @@ builder.Services.AddControllers();
 
 // Services
 builder.Services.AddScoped<IPollService, PollService>();
+builder.Services.AddScoped<IAuthUtils, AuthUtils>();
 
 // Mappers
 builder.Services.AddScoped<IWebMapper, WebMapper>();
@@ -46,6 +72,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors(webClientOrigins);
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
