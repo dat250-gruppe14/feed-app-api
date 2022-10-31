@@ -1,4 +1,7 @@
-using FeddBackApi.Models;
+using FeedAppApi.Models.Web;
+using FeedAppApi.Models.Entities;
+using FeedAppApi.Proxies.Data;
+using FeedAppApi.Enums;
 
 namespace FeedAppApi.Services;
 
@@ -13,33 +16,40 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public async Task<User> createUser(UserCreateRequest req)
+    public async Task<User> createUser(User user)
     {
-        _context.DataBase.EnsureCreated();
 
-        var user = new User();
         //Vet ikke vi kan generere id-en slik
-        user.id = Guid.NewGuid().ToString();
-
-        user.Name = req.Name;
-        user.isAdmin = false;
-
-
+        user.Id = Guid.NewGuid();
+        user.Role = UserRole.User;
         var createdUser = _context.Users.Add(user);
 
-        await _context.SaveChangeAsync();
-        return createdUser.Entity();
+        await _context.SaveChangesAsync();
+        return createdUser.Entity;
 
     }
 
-    public Task<User?> editUser(string UserID, CreateUserRequest request)
+    public async Task<User?> editUser(int Id, User newUser)
     {
+        var toUpdate = await _context.Users.FindAsync(Id);
+        if (toUpdate == null) return null;
+
+        toUpdate.Email = newUser.Email;
+        toUpdate.Name = newUser.Name;
+        //TODO: Oppdatere role på en trygg måte
+
+        toUpdate.Polls = newUser.Polls;
+        toUpdate.Votes = newUser.Votes;
+
+        _context.SaveChanges();
+
+        return toUpdate;
 
     }
 
     public Task<User?> deleteUser(string UserID)
     {
-
+        return null;
     }
 
     

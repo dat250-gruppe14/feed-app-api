@@ -1,10 +1,12 @@
-using FeedAppApi.Models;
+using FeedAppApi.Models.Web;
+using FeedAppApi.Models.Entities;
+
 
 namespace FeedAppApi.Services;
 
 public interface IUserService
 {
-    public User createUser(CreateUserRequest user);
-    public User? editUser(string UserID, CreateUserRequest user);
-    public User? deleteUser(string UserID);
+    public Task<User> createUser(User user);
+    public Task<User?> editUser(int Id, User newUser);
+    public Task<User?> deleteUser(string UserID);
 }

@@ -17,6 +17,7 @@ builder.Services.AddControllers();
 
 // Services
 builder.Services.AddScoped<IPollService, PollService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Mappers
 builder.Services.AddScoped<IWebMapper, WebMapper>();
