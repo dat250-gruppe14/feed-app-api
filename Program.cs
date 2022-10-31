@@ -42,11 +42,8 @@ builder.Services.AddControllers();
 
 // Services
 builder.Services.AddScoped<IPollService, PollService>();
-<<<<<<< HEAD
-builder.Services.AddScoped<IUserService, UserService>();
-=======
 builder.Services.AddScoped<IAuthUtils, AuthUtils>();
->>>>>>> main
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Mappers
 builder.Services.AddScoped<IWebMapper, WebMapper>();
