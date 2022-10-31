@@ -32,4 +32,9 @@ public class WebMapper : IWebMapper
     {
         return _automapper.Map<Poll>(request);
     }
+
+    public User MapUserCreateRequestToInternal(UserCreateRequest request)
+    {
+        return _automapper.Map<User>(request);
+    }
 }

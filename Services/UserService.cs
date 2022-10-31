@@ -13,26 +13,31 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public User addUser(CreateUserRequest req)
+    public async Task<User> createUser(UserCreateRequest req)
     {
         _context.DataBase.EnsureCreated();
 
         var user = new User();
+        //Vet ikke vi kan generere id-en slik
         user.id = Guid.NewGuid().ToString();
 
         user.Name = req.Name;
-
         user.isAdmin = false;
 
-        _context.
+
+        var createdUser = _context.Users.Add(user);
+
+        await _context.SaveChangeAsync();
+        return createdUser.Entity();
+
     }
 
-    public User? editUer(string UserID, CreateUserRequest request)
+    public Task<User?> editUser(string UserID, CreateUserRequest request)
     {
 
     }
 
-    public User? deleteUser(string UserID)
+    public Task<User?> deleteUser(string UserID)
     {
 
     }
