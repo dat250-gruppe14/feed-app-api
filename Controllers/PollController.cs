@@ -1,14 +1,17 @@
 using System.Net;
 using FeedAppApi.Errors;
 using FeedAppApi.Mappers;
+using FeedAppApi.Models.Entities;
 using FeedAppApi.Models.Web;
 using FeedAppApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeedAppApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PollController : ControllerBase
 {
     private readonly ILogger<PollController> _logger;
@@ -26,9 +29,11 @@ public class PollController : ControllerBase
     }
 
     [HttpGet(Name = "GetPolls")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetPolls()
     {
-		var polls = await _pollService.GetPolls(TEMP_USER);
+		var polls = await _pollService.GetPolls(new User() {Id = TEMP_USER});
+		// var polls = await _pollService.GetPolls(null);
 		return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, TEMP_USER)));
     }
 
@@ -52,4 +57,5 @@ public class PollController : ControllerBase
 		var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest));
 		return Ok(poll);
     }
+    
 }
