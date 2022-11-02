@@ -29,7 +29,7 @@ public class UserService : IUserService
 
     }
 
-    public async Task<User?> editUser(int Id, User newUser)
+    public async Task<User?> editUser(Guid Id, User newUser)
     {
         var toUpdate = await _context.Users.FindAsync(Id);
         if (toUpdate == null) return null;

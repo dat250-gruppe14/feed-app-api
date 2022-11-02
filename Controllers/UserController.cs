@@ -35,14 +35,22 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPut(Name = "EditUser")]
-    public async Task<IActionResult> EditUser(int Id,
+    [HttpPut("{Id}", Name = "EditUser")]
+    public async Task<IActionResult> EditUser([FromRoute] Guid Id,
                                             [FromBody] UserCreateRequest newUser)
     {
+        
+        
+        Console.WriteLine(Id);
         var user = await _userService.editUser(Id,
-                                         _webMapper.MapUserCreateRequestToInternal(newUser));
+            _webMapper.MapUserCreateRequestToInternal(newUser));
 
         return Ok(user);
+        
+
+      
+
+
 
 
 
