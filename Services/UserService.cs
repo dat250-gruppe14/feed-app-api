@@ -31,15 +31,19 @@ public class UserService : IUserService
 
     public async Task<User?> editUser(Guid Id, User newUser)
     {
-        var toUpdate = await _context.Users.FindAsync(Id);
-        if (toUpdate == null) return null;
+        var requestUser = await _context.Users.FindAsync(Id); //User that sent the request
+        var toUpdate = await _context.Users.FindAsync(newUser.Id); //User to be updated
+        if (toUpdate == null | requestUser == null) return null;
+
+        if (!toUpdate.Equals(requestUser) & !(requestUser.Role).Equals(UserRole.Admin)) return null;
 
         toUpdate.Email = newUser.Email;
         toUpdate.Name = newUser.Name;
-        //TODO: Oppdatere role på en trygg måte
 
-        toUpdate.Polls = newUser.Polls;
-        toUpdate.Votes = newUser.Votes;
+        if (requestUser.Role == UserRole.Admin) //Admins can make other users admins
+        {
+            toUpdate.Role = newUser.Role;
+        }
 
         _context.SaveChanges();
 

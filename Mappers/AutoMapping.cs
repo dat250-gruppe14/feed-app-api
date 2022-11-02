@@ -14,5 +14,6 @@ public class AutoMapping : Profile
         CreateMap<PollCreateRequest, Poll>();
         CreateMap<User, UserWeb>();
         CreateMap<UserCreateRequest, User>();
+        CreateMap<UserUpdateRequest, User>();
     }
 }

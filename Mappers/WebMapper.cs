@@ -37,4 +37,9 @@ public class WebMapper : IWebMapper
     {
         return _automapper.Map<User>(request);
     }
+
+    public User MapUserUpdateRequestToInternal(UserUpdateRequest request)
+    {
+        return _automapper.Map<User>(request);
+    }
 }
