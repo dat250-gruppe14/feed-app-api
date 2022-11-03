@@ -20,7 +20,7 @@ public class PollUtils : IPollUtils
                 optionOneCount = Interlocked.Increment(ref optionOneCount);
             if (vote.OptionSelected == UserAnswer.AnswerTwo)
                 optionTwoCount = Interlocked.Increment(ref optionTwoCount);
-            if (vote.User.Id.Equals(userId))
+            if (vote.User != null && vote.User.Id.Equals(userId))
             {
                 userAnswer = vote.OptionSelected;
             }
