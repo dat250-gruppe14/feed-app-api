@@ -1,3 +1,4 @@
+using FeedAppApi.Exceptions;
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Utils;
@@ -39,6 +40,21 @@ public class PollService : IPollService
         return createdPoll.Entity;
     }
 
+    public async Task<Poll?> DeletePoll(string pincode, User user)
+    {
+        var poll = await GetPollByPincode(pincode);
+        
+        if (poll == null)
+            throw new NotFoundException($"Poll with pincode {pincode} doesn't exist.");
+        if (poll.Owner.Id != user.Id)
+            throw new NoAccessException($"User doesn't own this poll");
+        
+        _context.Polls.Remove(poll);
+        await _context.SaveChangesAsync();
+
+        return poll;
+    }
+    
     public async Task<Poll> PatchPoll(string pincode, JsonPatchDocument<Poll> pollDocument)
     {
         var poll = await GetPollByPincode(pincode);

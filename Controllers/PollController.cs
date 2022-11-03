@@ -1,5 +1,6 @@
 using System.Net;
 using FeedAppApi.Errors;
+using FeedAppApi.Exceptions;
 using FeedAppApi.Mappers;
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Models.Web;
@@ -33,9 +34,9 @@ public class PollController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetPolls()
     {
-        var polls = await _pollService.GetPolls(new User() { Id = TEMP_USER });
-        // var polls = await _pollService.GetPolls(null);
-        return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, TEMP_USER)));
+		var polls = await _pollService.GetPolls(new User {Id = TEMP_USER});
+		// var polls = await _pollService.GetPolls(null);
+		return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, TEMP_USER)));
     }
 
     [HttpGet("{pincode}", Name = "GetPollByPincode")]
@@ -69,6 +70,32 @@ public class PollController : ControllerBase
             return NotFound();
         }
         return Ok(_webMapper.MapPollToWeb(updatedPoll, TEMP_USER));
+    }
+
+    [HttpDelete("{pincode}", Name = "DeletePollByPincode")]
+    public async Task<IActionResult> DeletePollByPincode([FromRoute] string pincode)
+    {
+	    try
+	    {
+		    var poll = await _pollService.DeletePoll(pincode, new User {Id = TEMP_USER});
+		    return Ok(poll);
+	    }
+	    catch (NoAccessException ex)
+	    {
+		    return Unauthorized(new ApiErrorResponse
+		    {
+				Status = HttpStatusCode.Unauthorized,
+				Message = ex.Message
+		    });
+	    }
+	    catch (NotFoundException ex)
+	    {
+		    return NotFound(new ApiErrorResponse
+		    {
+			    Status = HttpStatusCode.NotFound,
+			    Message = ex.Message
+		    });
+	    }
     }
     
 }

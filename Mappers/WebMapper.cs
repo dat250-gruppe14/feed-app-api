@@ -33,6 +33,11 @@ public class WebMapper : IWebMapper
         return _automapper.Map<Poll>(request);
     }
 
+    public UserWeb MapUserToWeb(User user)
+    {
+        return _automapper.Map<UserWeb>(user);
+    }
+    
     public User MapUserCreateRequestToInternal(UserCreateRequest request)
     {
         return _automapper.Map<User>(request);
