@@ -1,9 +1,8 @@
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Konscious.Security.Cryptography;
+using FeedAppApi.Models.Entities;
 using Microsoft.IdentityModel.Tokens;
 using BC = BCrypt.Net.BCrypt;
 
@@ -83,5 +82,23 @@ public class AuthUtils : IAuthUtils
         {
             return false;
         }
+    }
+
+    public string? GetTokenFromHttpContext(HttpContext httpContext)
+    {
+        string? token;
+        try
+        {
+            return httpContext.Request.Headers.Authorization[0][7..];
+        }
+        catch (IndexOutOfRangeException)
+        {
+            return null;
+        }
+    }
+
+    public User? GetLoggedInUserFromHttpContext(HttpContext httpContext)
+    {
+        return (User) httpContext.Items["user"]!;
     }
 }

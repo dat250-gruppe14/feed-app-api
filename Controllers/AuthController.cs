@@ -81,16 +81,7 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken()
     {
-        string? token;
-        try
-        {
-            token = HttpContext.Request.Headers.Authorization[0][7..];
-        }
-        catch (IndexOutOfRangeException)
-        {
-            token = null;
-        }
-        
+        var token = _authUtils.GetTokenFromHttpContext(HttpContext);
         var refreshToken = HttpContext.Request.Cookies["refreshToken"];
         
         if (refreshToken == null || token == null)

@@ -1,3 +1,5 @@
+using FeedAppApi.Models.Entities;
+
 namespace FeedAppApi.Utils;
 
 public interface IAuthUtils
@@ -6,4 +8,6 @@ public interface IAuthUtils
     string GetUserIdFromToken(string token);
     string GenerateRefreshToken();
     bool ValidateExpiredToken(string token);
+    string? GetTokenFromHttpContext(HttpContext httpContext);
+    User? GetLoggedInUserFromHttpContext(HttpContext httpContext);
 }
