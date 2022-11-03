@@ -40,13 +40,13 @@ public class PollService : IPollService
         return createdPoll.Entity;
     }
 
-    public async Task<Poll?> DeletePoll(string pincode, User user)
+    public async Task<Poll?> DeletePoll(string pincode, Guid? userId)
     {
         var poll = await GetPollByPincode(pincode);
-        
+
         if (poll == null)
-            throw new NotFoundException($"Poll with pincode {pincode} doesn't exist.");
-        if (poll.Owner.Id != user.Id)
+            return null;
+        if (userId == null || poll.Owner.Id != userId)
             throw new NoAccessException($"User doesn't own this poll");
         
         _context.Polls.Remove(poll);
@@ -55,7 +55,7 @@ public class PollService : IPollService
         return poll;
     }
     
-    public async Task<Poll> PatchPoll(string pincode, JsonPatchDocument<Poll> pollDocument)
+    public async Task<Poll?> PatchPoll(string pincode, JsonPatchDocument<Poll> pollDocument)
     {
         var poll = await GetPollByPincode(pincode);
 

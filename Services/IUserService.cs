@@ -10,4 +10,5 @@ public interface IUserService
     Task<User?> GetUserByEmail(string email);
     Task<User?> GetUserById(Guid id);
     Task<User?> UpdateRefreshToken(Guid userId, string refreshToken);
+    User? GetLoggedInUser(HttpContext httpContext);
 }

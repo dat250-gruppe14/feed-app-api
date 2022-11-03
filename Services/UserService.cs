@@ -1,6 +1,7 @@
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Enums;
+using FeedAppApi.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace FeedAppApi.Services;
@@ -8,10 +9,12 @@ namespace FeedAppApi.Services;
 public class UserService : IUserService
 {
     private readonly DataContext _context;
+    private readonly IAuthUtils _authUtils;
 
-    public UserService(DataContext context)
+    public UserService(DataContext context, IAuthUtils authUtils)
     {
         _context = context;
+        _authUtils = authUtils;
     }
 
     public async Task<User> createUser(User user)
@@ -75,5 +78,16 @@ public class UserService : IUserService
 
         return user;
     }
-    
+
+    public User? GetLoggedInUser(HttpContext httpContext)
+    {
+        var token = _authUtils.GetTokenFromHttpContext(httpContext);
+        if (token == null) return null;
+        var userId = _authUtils.GetUserIdFromToken(token);
+        
+        return _context.Users.Where(u => u.Id == Guid.Parse(userId))
+            .Include(u => u.Polls)
+            .Include(u => u.Votes)
+            .FirstOrDefault();
+    }
 }
