@@ -8,4 +8,6 @@ public interface IWebMapper
     PollWeb MapPollToWeb(Poll poll, Guid userId);
     Poll MapPollCreateRequestToInternal(PollCreateRequest request);
     UserWeb MapUserToWeb(User user);
+    User MapUserCreateRequestToInternal(UserCreateRequest request);
+    User MapUserUpdateRequestToInternal(UserUpdateRequest request);
 }

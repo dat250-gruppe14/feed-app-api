@@ -40,7 +40,8 @@ builder.Services.AddAuthorization();
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
 
 // Services
 builder.Services.AddScoped<IPollService, PollService>();

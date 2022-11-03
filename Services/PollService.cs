@@ -3,6 +3,7 @@ using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace FeedAppApi.Services;
 
@@ -50,6 +51,21 @@ public class PollService : IPollService
         
         _context.Polls.Remove(poll);
         await _context.SaveChangesAsync();
+
+        return poll;
+    }
+    
+    public async Task<Poll> PatchPoll(string pincode, JsonPatchDocument<Poll> pollDocument)
+    {
+        var poll = await GetPollByPincode(pincode);
+
+        if (poll == null)
+        {
+            return poll;
+        }
+        pollDocument.ApplyTo(poll);
+        await _context.SaveChangesAsync();
+
         return poll;
     }
 }
