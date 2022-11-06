@@ -84,6 +84,7 @@ public class UserService : IUserService
         var token = _authUtils.GetTokenFromHttpContext(httpContext);
         if (token == null) return null;
         var userId = _authUtils.GetUserIdFromToken(token);
+        if (userId == null) return null;
         
         return _context.Users.Where(u => u.Id == Guid.Parse(userId))
             .Include(u => u.Polls)
