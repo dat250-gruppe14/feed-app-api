@@ -43,12 +43,19 @@ public class AuthUtils : IAuthUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public string GetUserIdFromToken(string token)
+    public string? GetUserIdFromToken(string token)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var decodedToken = tokenHandler.ReadJwtToken(token);
-        var subClaim = decodedToken.Claims.First(p => p.Type == "sub");
-        return subClaim.Value;
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var decodedToken = tokenHandler.ReadJwtToken(token);
+            var subClaim = decodedToken.Claims.First(p => p.Type == "sub");
+            return subClaim.Value;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     public string GenerateRefreshToken()

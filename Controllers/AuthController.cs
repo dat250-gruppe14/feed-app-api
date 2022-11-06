@@ -105,17 +105,19 @@ public class AuthController : ControllerBase
         }
 
         var userId = _authUtils.GetUserIdFromToken(token);
+
+        if (userId == null)
+        {
+            return ResponseUtils.UnauthorizedResponse("JWT token not verified");
+        }
+        
         var userIdParsed = Guid.Parse(userId);
         
         var user = await _userService.GetUserById(userIdParsed);
 
         if (user == null)
         {
-            return Unauthorized(new ApiErrorResponse
-            {
-                Message = "JWT Token not verified",
-                Status = HttpStatusCode.Unauthorized
-            });
+            return ResponseUtils.UnauthorizedResponse("JWT token not verified");
         }
 
         if (user.RefreshToken != refreshToken || user.RefreshTokenExpires < DateTime.UtcNow)
@@ -141,7 +143,9 @@ public class AuthController : ControllerBase
         httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
         {
             Expires = DateTimeOffset.UtcNow.AddDays(7),
-            HttpOnly = true
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None
         });
 
         return token;
