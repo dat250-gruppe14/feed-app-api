@@ -11,8 +11,8 @@ public class Vote
     public UserAnswer OptionSelected { get; set; }
     
     [ForeignKey("User")]
-    public Guid UserId { get; set; }
-    public virtual User User { get; set; }
+    public Guid? UserId { get; set; }
+    public virtual User? User { get; set; }
     
     [ForeignKey("Poll")]
     public Guid PollId { get; set; }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FeedAppApi.Models.Web;
 
-public class CredetialsWeb
+public class LoginWeb
 {
     [Required]
     public string Email { get; set; }

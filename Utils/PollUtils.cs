@@ -8,7 +8,7 @@ namespace FeedAppApi.Utils;
 
 public class PollUtils : IPollUtils
 {
-    public Records.PollStats CountPollVotes(Poll poll, Guid userId)
+    public Records.PollStats CountPollVotes(Poll poll, Guid? userId)
     {
         var optionOneCount = 0;
         var optionTwoCount = 0;
@@ -20,7 +20,7 @@ public class PollUtils : IPollUtils
                 optionOneCount = Interlocked.Increment(ref optionOneCount);
             if (vote.OptionSelected == UserAnswer.AnswerTwo)
                 optionTwoCount = Interlocked.Increment(ref optionTwoCount);
-            if (vote.User.Id.Equals(userId))
+            if (vote.User != null && userId != null && vote.User.Id.Equals(userId))
             {
                 userAnswer = vote.OptionSelected;
             }

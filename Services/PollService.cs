@@ -1,7 +1,9 @@
+using FeedAppApi.Exceptions;
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace FeedAppApi.Services;
 
@@ -36,6 +38,35 @@ public class PollService : IPollService
         var createdPoll = _context.Polls.Add(poll);
         await _context.SaveChangesAsync();
         return createdPoll.Entity;
+    }
+
+    public async Task<Poll?> DeletePoll(string pincode, Guid? userId)
+    {
+        var poll = await GetPollByPincode(pincode);
+
+        if (poll == null)
+            return null;
+        if (userId == null || poll.Owner.Id != userId)
+            throw new NoAccessException($"User doesn't own this poll");
+        
+        _context.Polls.Remove(poll);
+        await _context.SaveChangesAsync();
+
+        return poll;
+    }
+    
+    public async Task<Poll?> PatchPoll(string pincode, JsonPatchDocument<Poll> pollDocument)
+    {
+        var poll = await GetPollByPincode(pincode);
+
+        if (poll == null)
+        {
+            return poll;
+        }
+        pollDocument.ApplyTo(poll);
+        await _context.SaveChangesAsync();
+
+        return poll;
     }
 }
 

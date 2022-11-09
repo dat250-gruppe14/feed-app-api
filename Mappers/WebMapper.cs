@@ -16,15 +16,20 @@ public class WebMapper : IWebMapper
         _pollUtils = pollUtils;
     }
     
-    public PollWeb MapPollToWeb(Poll poll, Guid userId)
+    public PollWeb MapPollToWeb(Poll poll, Guid? userId , bool countVotes = true)
     {
         var pollWeb = _automapper.Map<PollWeb>(poll);
+
+        if (!countVotes)
+        {
+            pollWeb.Counts = new PollCountsWeb();
+            return pollWeb;
+        }
         
         var pollStats = _pollUtils.CountPollVotes(poll, userId);
-        
         pollWeb.Counts = new PollCountsWeb {OptionOneCount = pollStats.OptionOneCount, OptionTwoCount = pollStats.OptionTwoCount};
         pollWeb.UserAnswer = pollStats.UserAnswer;
-        
+
         return pollWeb;
     }
 
@@ -33,6 +38,11 @@ public class WebMapper : IWebMapper
         return _automapper.Map<Poll>(request);
     }
 
+    public UserWeb MapUserToWeb(User user)
+    {
+        return _automapper.Map<UserWeb>(user);
+    }
+    
     public User MapUserCreateRequestToInternal(UserCreateRequest request)
     {
         return _automapper.Map<User>(request);
