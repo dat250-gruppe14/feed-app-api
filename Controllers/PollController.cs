@@ -61,7 +61,8 @@ public class PollController : ControllerBase
     {
 	    try
 	    {
-	        var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest));
+			var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
+	        var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest), currentUser);
 	        return Ok(_webMapper.MapPollToWeb(poll, null, false));
 	    }
 	    catch (EfCoreException e)
