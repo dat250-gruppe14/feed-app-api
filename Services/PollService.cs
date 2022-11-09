@@ -10,11 +10,13 @@ namespace FeedAppApi.Services;
 public class PollService : IPollService
 {
     private readonly DataContext _context;
+    private readonly IUserService _userService;
     private readonly IPollUtils _pollUtils;
 
-    public PollService(DataContext context, IPollUtils pollUtils)
+    public PollService(DataContext context, IUserService userService, IPollUtils pollUtils)
     {
         _context = context;
+        _userService = userService;
         _pollUtils = pollUtils;
     }
 
@@ -28,7 +30,7 @@ public class PollService : IPollService
         return await _context.Polls.FirstOrDefaultAsync(p => p.Pincode == pincode);
     }
 
-    public async Task<Poll> CreatePoll(Poll poll)
+    public async Task<Poll> CreatePoll(Poll poll, User? user)
     {
         string pincode;
         Poll? pollWithSamePincode;
@@ -41,6 +43,7 @@ public class PollService : IPollService
 
         poll.Pincode = pincode;
         poll.CreatedTime = DateTime.Now.ToUniversalTime();
+        poll.OwnerId = user!.Id;
 
         try
         {
