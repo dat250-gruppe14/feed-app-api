@@ -18,14 +18,27 @@ public class UserService : IUserService
 
     public async Task<User> createUser(User user)
     {
+        var maill = user.Email;
+        var name = user.Name;
+        
 
-        //Vet ikke vi kan generere id-en slik
-        user.Id = Guid.NewGuid();
-        user.Role = UserRole.User;
-        var createdUser = _context.Users.Add(user);
+        if(!_context.Users.Any(x => x.Email == user.Email  &
+                                         x.Name == user.Name))
+        {
+            user.Id = Guid.NewGuid();
+            user.Role = UserRole.User;
 
-        await _context.SaveChangesAsync();
-        return createdUser.Entity;
+            var createdUser = _context.Users.Add(user);
+
+            await _context.SaveChangesAsync();
+            return createdUser.Entity;
+        }
+
+        else
+        {
+            return null;
+        }
+        
 
     }
 
