@@ -53,6 +53,12 @@ public class PollUtils : IPollUtils
             .Where(poll => (PollIsPublic(poll) && PollIsActive(poll)) || YouOwnThePoll(poll, user.Id));
     }
 
+    public string GeneratePincode()
+    {
+        Random generator = new Random();
+        return generator.Next(100000, 999999).ToString("D6");
+    }
+
     private Func<Poll, bool> PollIsPublic = poll => poll.Access == PollAccess.Public;
 
     private Func<Poll, Guid, bool> YouOwnThePoll = (poll, userId) => poll.OwnerId == userId;
