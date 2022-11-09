@@ -30,14 +30,28 @@ public class PollService : IPollService
 
     public async Task<Poll> CreatePoll(Poll poll)
     {
-        // TODO: Autogenerer pin
-        poll.Pincode = "919191";
+        string pincode;
+        Poll? pollWithSamePincode;
+
+        do
+        {
+            pincode = _pollUtils.GeneratePincode();
+            pollWithSamePincode = await GetPollByPincode(pincode);
+        } while (pollWithSamePincode != null);
+
+        poll.Pincode = pincode;
         poll.CreatedTime = DateTime.Now.ToUniversalTime();
-        
-        // TODO: Catch DbUpdateException
-        var createdPoll = _context.Polls.Add(poll);
-        await _context.SaveChangesAsync();
-        return createdPoll.Entity;
+
+        try
+        {
+            var createdPoll = _context.Polls.Add(poll);
+            await _context.SaveChangesAsync();
+            return createdPoll.Entity;
+        }
+        catch (DbUpdateException e)
+        {
+            throw new EfCoreException(e.InnerException?.Message ?? "An error occured while storing the poll.");
+        }
     }
 
     public async Task<Poll?> DeletePoll(string pincode, Guid? userId)

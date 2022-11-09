@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FeedAppApi.Enums;
 
 namespace FeedAppApi.Models.Web;
@@ -5,8 +6,9 @@ namespace FeedAppApi.Models.Web;
 
 public class UserUpdateRequest
 {
-    public Guid Id { get; set; }
+    [Required]
     public string Name { get; set; }
+    [Required]
     public string Email { get; set; }
-    public UserRole Role { get; set; }
+    public UserRole? Role { get; set; }
 }
