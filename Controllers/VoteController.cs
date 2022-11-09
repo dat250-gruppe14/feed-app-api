@@ -11,6 +11,7 @@ namespace FeedAppApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+
 public class VoteController : ControllerBase 
 {
 
