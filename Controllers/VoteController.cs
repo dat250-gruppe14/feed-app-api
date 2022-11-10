@@ -45,8 +45,16 @@ public class VoteController : ControllerBase
         var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
         var vote = await _voteService.createVote(currentUser, req);
 
+        if (currentUser == null)
+        {
+            return Ok(_webMapper.MapVoteToWeb(vote, null));
+        }
+        else
+        {
+            return Ok(_webMapper.MapVoteToWeb(vote, currentUser.Id));
+        }
 
-        return Ok(_webMapper.MapVoteToWeb(vote));
+        
     }
 
       

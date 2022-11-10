@@ -53,9 +53,12 @@ public class WebMapper : IWebMapper
         return _automapper.Map<User>(request);
     }
 
-    public VoteWeb MapVoteToWeb(Vote vote)
+    public VoteWeb MapVoteToWeb(Vote vote, Guid? userId)
     {
-        var pollWeb = this.MapPollToWeb(vote.Poll, vote.User.Id);
+        
+        var pollWeb = this.MapPollToWeb(vote.Poll, userId);
+        pollWeb.UserAnswer = vote.OptionSelected;
+       
         
         var vWeb = new VoteWeb();
         vWeb.pollWeb = pollWeb;

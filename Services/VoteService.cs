@@ -31,7 +31,11 @@ public class VoteService : IVoteService
         var vote = new Vote();
         vote.Id = Guid.NewGuid();
         vote.OptionSelected = request.OptionSelected;
-        vote.UserId = user.Id;
+        if (user != null)
+        {
+            vote.UserId = user.Id;
+        }
+        
         vote.User = user;
         vote.PollId = poll.Id;
         vote.Poll = poll;
