@@ -4,6 +4,7 @@ using FeedAppApi.Proxies.Data;
 using FeedAppApi.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
+using FeedAppApi.Exceptions;
 
 namespace FeedAppApi.Services;
 
