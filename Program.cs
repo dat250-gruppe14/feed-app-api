@@ -88,6 +88,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 app.UseCors(webClientOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
