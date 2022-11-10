@@ -1,3 +1,5 @@
+using System.Net;
+using FeedAppApi.Errors;
 using FeedAppApi.Exceptions;
 using FeedAppApi.Mappers;
 using FeedAppApi.Models.Entities;
@@ -57,8 +59,20 @@ public class PollController : ControllerBase
     [HttpPost(Name = "CreatePoll")]
     public async Task<IActionResult> CreatePoll([FromBody] PollCreateRequest pollCreateRequest)
     {
-        var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest));
-        return Ok(_webMapper.MapPollToWeb(poll, null, false));
+	    try
+	    {
+			var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
+	        var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest), currentUser);
+	        return Ok(_webMapper.MapPollToWeb(poll, null, false));
+	    }
+	    catch (EfCoreException e)
+	    {
+		    return StatusCode(500, new ApiErrorResponse
+		    {
+			    Status = HttpStatusCode.InternalServerError,
+			    Message = e.Message
+		    });
+	    }
     }
 
     [HttpPatch("{pincode}", Name = "UpdatePoll")]

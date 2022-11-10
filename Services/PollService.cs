@@ -11,11 +11,13 @@ namespace FeedAppApi.Services;
 public class PollService : IPollService
 {
     private readonly DataContext _context;
+    private readonly IUserService _userService;
     private readonly IPollUtils _pollUtils;
 
-    public PollService(DataContext context, IPollUtils pollUtils)
+    public PollService(DataContext context, IUserService userService, IPollUtils pollUtils)
     {
         _context = context;
+        _userService = userService;
         _pollUtils = pollUtils;
     }
 
@@ -29,16 +31,31 @@ public class PollService : IPollService
         return await _context.Polls.FirstOrDefaultAsync(p => p.Pincode == pincode);
     }
 
-    public async Task<Poll> CreatePoll(Poll poll)
+    public async Task<Poll> CreatePoll(Poll poll, User? user)
     {
-        // TODO: Autogenerer pin
-        poll.Pincode = "9191919";
+        string pincode;
+        Poll? pollWithSamePincode;
+
+        do
+        {
+            pincode = _pollUtils.GeneratePincode();
+            pollWithSamePincode = await GetPollByPincode(pincode);
+        } while (pollWithSamePincode != null);
+
+        poll.Pincode = pincode;
         poll.CreatedTime = DateTime.Now.ToUniversalTime();
-        
-        // TODO: Catch DbUpdateException
-        var createdPoll = _context.Polls.Add(poll);
-        await _context.SaveChangesAsync();
-        return createdPoll.Entity;
+        poll.OwnerId = user!.Id;
+
+        try
+        {
+            var createdPoll = _context.Polls.Add(poll);
+            await _context.SaveChangesAsync();
+            return createdPoll.Entity;
+        }
+        catch (DbUpdateException e)
+        {
+            throw new EfCoreException(e.InnerException?.Message ?? "An error occured while storing the poll.");
+        }
     }
 
     public async Task<Poll?> DeletePoll(string pincode, Guid? userId)
