@@ -2,6 +2,9 @@ using FeedAppApi.Models.Web;
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Enums;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FeedAppApi.Services;
 
@@ -9,27 +12,28 @@ namespace FeedAppApi.Services;
 public class VoteService : IVoteService
 {
     private readonly DataContext _context;
+    private readonly IPollService _pollService;
 
-    public VoteService(DataContext context)
+    public VoteService(DataContext context, IPollService pollService)
     {
         _context = context;
+        _pollService = pollService;
     }
 
-    public async Task<Vote?> createVote(Guid userId, VoteCreateRequest request)
+    public async Task<Vote?> createVote(User user, VoteCreateRequest request)
     {
-        var user = await _context.Users.FindAsync(userId);
-        var pollId = request.PollId;
+        var pincode = request.PollPincode;
 
-        var poll = await _context.Polls.FindAsync(pollId);
+        var poll = await _pollService.GetPollByPincode(pincode);
 
         if (poll == null | user == null) return null;
 
         var vote = new Vote();
         vote.Id = Guid.NewGuid();
         vote.OptionSelected = request.OptionSelected;
-        vote.UserId = userId;
+        vote.UserId = user.Id;
         vote.User = user;
-        vote.PollId = pollId;
+        vote.PollId = poll.Id;
         vote.Poll = poll;
 
         var createdVote = _context.Votes.Add(vote);
@@ -38,4 +42,12 @@ public class VoteService : IVoteService
 
         return createdVote.Entity;
     }
+
+
+
+
+
+
+
+    
 }

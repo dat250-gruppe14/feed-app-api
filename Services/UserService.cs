@@ -21,39 +21,43 @@ public class UserService : IUserService
     {
         var maill = user.Email;
         var name = user.Name;
-        
 
-        if(!_context.Users.Any(x => x.Email == user.Email  &
-                                         x.Name == user.Name))
+
+        if (!_context.Users.Any(x => x.Email == user.Email &
+                                     x.Name == user.Name))
         {
             user.Id = Guid.NewGuid();
             user.Role = UserRole.User;
 
             var createdUser = _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return createdUser.Entity;
+        }
 
-        await _context.SaveChangesAsync();
-        return createdUser.Entity;
+        return null;
+
+
     }
 
-    public async Task<User?> editUser(Guid Id, User newUser)
+    public async Task<User?> editUser(User currentUser, Guid Id, User newUser)
     {
-        var requestUser = await _context.Users.FindAsync(Id); //User that sent the request
-        var toUpdate = await _context.Users.FindAsync(newUser.Id); //User to be updated
-        if (toUpdate == null | requestUser == null) return null;
+        //var currentUser = await _context.Users.FindAsync(Id); //User that sent the request
+        var userToUpdate = await _context.Users.FindAsync(Id); //User to be updated
+        if (userToUpdate == null | currentUser == null) return null;
 
-        if (!toUpdate.Equals(requestUser) & !(requestUser.Role).Equals(UserRole.Admin)) return null;
+        if ((currentUser.Id != userToUpdate.Id) & !(currentUser.Role).Equals(UserRole.Admin)) return null;
 
-        toUpdate.Email = newUser.Email;
-        toUpdate.Name = newUser.Name;
+        userToUpdate.Email = newUser.Email;
+        userToUpdate.Name = newUser.Name;
 
-        if (requestUser.Role == UserRole.Admin) //Admins can make other users admins
+        if (currentUser.Role == UserRole.Admin) //Admins can make other users admins
         {
-            toUpdate.Role = newUser.Role;
+            userToUpdate.Role = newUser.Role;
         }
 
         _context.SaveChanges();
 
-        return toUpdate;
+        return userToUpdate;
 
     }
 

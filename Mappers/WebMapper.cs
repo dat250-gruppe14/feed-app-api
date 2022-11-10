@@ -52,4 +52,13 @@ public class WebMapper : IWebMapper
     {
         return _automapper.Map<User>(request);
     }
+
+    public VoteWeb MapVoteToWeb(Vote vote)
+    {
+        var pollWeb = this.MapPollToWeb(vote.Poll, vote.User.Id);
+        
+        var vWeb = new VoteWeb();
+        vWeb.pollWeb = pollWeb;
+        return vWeb;
+    }
 }

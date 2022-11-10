@@ -4,6 +4,7 @@ using FeedAppApi.Proxies.Data;
 using FeedAppApi.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
+using FeedAppApi.Exceptions;
 
 namespace FeedAppApi.Services;
 
@@ -31,7 +32,7 @@ public class PollService : IPollService
     public async Task<Poll> CreatePoll(Poll poll)
     {
         // TODO: Autogenerer pin
-        poll.Pincode = "919191";
+        poll.Pincode = "9191919";
         poll.CreatedTime = DateTime.Now.ToUniversalTime();
         
         // TODO: Catch DbUpdateException
