@@ -22,6 +22,10 @@ public class VoteService : IVoteService
 
     public async Task<Vote?> createVote(User user, VoteCreateRequest request)
     {
+
+        
+
+        
         var pincode = request.PollPincode;
 
         var poll = await _pollService.GetPollByPincode(pincode);
@@ -33,6 +37,15 @@ public class VoteService : IVoteService
         vote.OptionSelected = request.OptionSelected;
         if (user != null)
         {
+            //A user can only vote once on each poll
+            var votes = _context.Votes.Where(v => v.UserId == user.Id);
+            foreach (var v in votes)
+            {
+                if (v.PollId == poll.Id)
+                {
+                    return null;
+                }
+            }
             vote.UserId = user.Id;
         }
         
