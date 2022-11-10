@@ -36,14 +36,6 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpPost(Name = "CreateUser")]
-    public async Task<IActionResult> CreateUser([FromBody] UserCreateRequest userCreateRequest)
-    {
-        var user = await _userService.createUser(_webMapper.MapUserCreateRequestToInternal(userCreateRequest));
-
-        return Ok(user);
-    }
-
     [HttpPut("{Id}", Name = "EditUser")]
     public async Task<IActionResult> EditUser([FromRoute] Guid Id, [FromBody] UserUpdateRequest newUser)
     {
