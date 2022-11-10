@@ -26,7 +26,7 @@ public class VoteService : IVoteService
 
         var poll = await _pollService.GetPollByPincode(pincode);
 
-        if (poll == null | user == null) return null;
+        if (poll == null) return null;
 
         var vote = new Vote();
         vote.Id = Guid.NewGuid();
