@@ -45,15 +45,22 @@ public class PollController : ControllerBase
 		return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, currentUser?.Id)));
     }
 
+    [AllowAnonymous]
     [HttpGet("{pincode}", Name = "GetPollByPincode")]
     public async Task<IActionResult> GetPollByPincode([FromRoute] string pincode)
     {
 	    var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
 	    
         var poll = await _pollService.GetPollByPincode(pincode);
-        return poll != null
-	        ? Ok(_webMapper.MapPollToWeb(poll, currentUser?.Id))
-	        : ResponseUtils.NotFoundResponse($"Poll with pincode {pincode} doesn't exist");
+        if (poll == null)
+	        return ResponseUtils.NotFoundResponse($"Poll with pincode {pincode} doesn't exist");
+
+        if (currentUser == null && poll.Access == PollAccess.Private)
+        {
+	        return ResponseUtils.UnauthorizedResponse("Log in to access private polls.");
+        }
+
+        return Ok(_webMapper.MapPollToWeb(poll, currentUser?.Id));
     }
 
     [HttpPost(Name = "CreatePoll")]
@@ -96,7 +103,7 @@ public class PollController : ControllerBase
 	    
 	    try
 	    {
-		    var poll = await _pollService.DeletePoll(pincode, currentUser?.Id);
+		    var poll = await _pollService.DeletePoll(pincode, currentUser);
 
 		    if (poll == null)
 		    {

@@ -20,10 +20,10 @@ public class UserController : ControllerBase
     
 
     public UserController(
-                            ILogger<UserController> logger, 
-                            IUserService userService, 
-                            IWebMapper webMapper,
-                            IAuthUtils authUtils)
+        ILogger<UserController> logger, 
+        IUserService userService, 
+        IWebMapper webMapper,
+        IAuthUtils authUtils)
     {
         _logger = logger;
         _userService = userService;
@@ -31,6 +31,16 @@ public class UserController : ControllerBase
         _authUtils = authUtils;
     }
 
+    [HttpGet(Name = "GetUsers")]
+    public async Task<IActionResult> GetUsers()
+    {
+        var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
+
+        var users = await _userService.GetAllUsers(currentUser);
+        return users != null
+            ? Ok(users.Select(user => _webMapper.MapUserToWeb(user)))
+            : ResponseUtils.UnauthorizedResponse("You're not an admin.");
+    }
 
     [HttpPut("{Id}", Name = "EditUser")]
     public async Task<IActionResult> EditUser([FromRoute] Guid Id, [FromBody] UserUpdateRequest newUser)
@@ -40,7 +50,7 @@ public class UserController : ControllerBase
         var user = await _userService.editUser(currentUser, Id,
             _webMapper.MapUserUpdateRequestToInternal(newUser));
 
-        return Ok(user);
+        return Ok(_webMapper.MapUserToWeb(user));
     }
 
 }

@@ -11,4 +11,5 @@ public interface IUserService
     Task<User?> GetUserById(Guid id);
     Task<User?> UpdateRefreshToken(Guid userId, string refreshToken);
     User? GetLoggedInUser(HttpContext httpContext);
+    Task<IEnumerable<User>?> GetAllUsers(User? user);
 }
