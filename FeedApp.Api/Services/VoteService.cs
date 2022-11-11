@@ -1,6 +1,7 @@
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Common.Models.Entities;
+using FeedApp.Common.Exceptions;
 
 namespace FeedApp.Api.Services;
 

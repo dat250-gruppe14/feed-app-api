@@ -1,5 +1,6 @@
 using FeedApp.Common.Exceptions;
 using FeedApp.Common.Models.Entities;
+using FeedApp.Common.Enums;
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Api.Utils;
 using FeedApp.Messaging.Sender;

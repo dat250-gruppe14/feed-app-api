@@ -1,6 +1,7 @@
 using System.Net;
 using FeedApp.Api.Errors;
 using FeedApp.Common.Exceptions;
+using FeedApp.Common.Enums;
 using FeedApp.Common.Models.Entities;
 using FeedApp.Api.Mappers;
 using FeedApp.Api.Models.Web;
