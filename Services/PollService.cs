@@ -1,10 +1,10 @@
+using FeedAppApi.Enums;
 using FeedAppApi.Exceptions;
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
-using FeedAppApi.Exceptions;
 
 namespace FeedAppApi.Services;
 
@@ -58,13 +58,13 @@ public class PollService : IPollService
         }
     }
 
-    public async Task<Poll?> DeletePoll(string pincode, Guid? userId)
+    public async Task<Poll?> DeletePoll(string pincode, User? user)
     {
         var poll = await GetPollByPincode(pincode);
 
         if (poll == null)
             return null;
-        if (userId == null || poll.Owner.Id != userId)
+        if (user == null || poll.Owner.Id != user.Id && user.Role != UserRole.Admin)
             throw new NoAccessException($"User doesn't own this poll");
         
         _context.Polls.Remove(poll);
