@@ -35,8 +35,6 @@ public class UserService : IUserService
         }
 
         return null;
-
-
     }
 
     public async Task<User?> editUser(User currentUser, Guid Id, User newUser)
@@ -58,7 +56,6 @@ public class UserService : IUserService
         _context.SaveChanges();
 
         return userToUpdate;
-
     }
 
     public Task<User?> deleteUser(string UserID)

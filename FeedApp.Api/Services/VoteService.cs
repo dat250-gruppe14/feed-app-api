@@ -1,10 +1,6 @@
 using FeedAppApi.Models.Web;
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Common.Models.Entities;
-using FeedApp.Common.Enums;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace FeedApp.Api.Services;
 
@@ -22,10 +18,6 @@ public class VoteService : IVoteService
 
     public async Task<Vote?> createVote(User user, VoteCreateRequest request)
     {
-
-        
-
-        
         var pincode = request.PollPincode;
 
         var poll = await _pollService.GetPollByPincode(pincode);
@@ -59,12 +51,4 @@ public class VoteService : IVoteService
 
         return createdVote.Entity;
     }
-
-
-
-
-
-
-
-    
 }
