@@ -34,10 +34,13 @@ namespace FeedApp.Messaging.Sender
                 {
                     channel.QueueDeclare(queue: _queuename, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-                    var json = JsonConvert.SerializeObject(poll);
+                    var json = JsonConvert.SerializeObject(poll, new JsonSerializerSettings()
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    });
                     var body = Encoding.UTF8.GetBytes(json);
 
-                    Console.WriteLine("Publishing");
+                    Console.WriteLine($"Publishing {body}");
                     channel.BasicPublish(exchange: string.Empty, routingKey: _queuename, basicProperties: null, body: body);
                 }
             }
