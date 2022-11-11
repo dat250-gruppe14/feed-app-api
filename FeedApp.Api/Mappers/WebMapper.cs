@@ -65,6 +65,18 @@ public class WebMapper : IWebMapper
 
     public PollPub MapPollToPublish(Poll poll)
     {
-        return _automapper.Map<PollPub>(poll);
+        var pollPub = _automapper.Map<PollPub>(poll);
+        pollPub.Started = poll.StartTime;
+        pollPub.Ended = poll.EndTime;
+
+        var pollStats = _pollUtils.CountPollVotes(poll, null);
+
+        pollPub.Counts = new PollCountsPub
+        {
+            OptionOneCount = pollStats.OptionOneCount,
+            OptionTwoCount = pollStats.OptionTwoCount,
+        };
+
+        return pollPub;
     }
 }
