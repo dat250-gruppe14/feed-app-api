@@ -1,4 +1,4 @@
-using FeedAppApi.Models.Web;
+using FeedApp.Api.Models.Web;
 using FeedApp.Common.Models.Entities;
 
 namespace FeedApp.Api.Services;

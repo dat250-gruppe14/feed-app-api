@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using FeedApp.Api.Errors;
 using FeedApp.Api.Mappers;
-using FeedAppApi.Models.Web;
+using FeedApp.Api.Models.Web;
 using FeedApp.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using FeedApp.Api.Utils;
@@ -24,8 +24,6 @@ public class VoteController : ControllerBase
     private readonly IVoteService _voteService;
     private IWebMapper _webMapper;
     private IAuthUtils _authUtils;
-
-
 
     public VoteController(
         ILogger<VoteController> logger, 

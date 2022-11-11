@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using FeedApp.Common.Models.Entities;
 using Microsoft.IdentityModel.Tokens;
-using BC = BCrypt.Net.BCrypt;
 
 namespace FeedApp.Api.Utils;
 
