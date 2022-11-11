@@ -1,13 +1,9 @@
-using System;
-using System.Net;
-using System.Threading.Tasks;
 using FeedApp.Api.Errors;
 using FeedApp.Api.Mappers;
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Services;
+using FeedApp.Api.Utils;
 using Microsoft.AspNetCore.Mvc;
-using FeedAppApi.Utils;
-
 
 namespace FeedApp.Api.Controllers;
 
