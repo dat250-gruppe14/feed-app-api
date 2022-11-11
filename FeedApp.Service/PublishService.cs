@@ -1,6 +1,7 @@
 ﻿using FeedApp.Api.Proxies.Data;
 using FeedApp.Common.Models.Entities;
 using FeedApp.Messaging.Sender;
+using FeedApp.Api.Mappers;
 
 namespace FeedApp.Service
 {
@@ -9,33 +10,42 @@ namespace FeedApp.Service
         private readonly ILogger<PublishService> _logger;
         private readonly DataContext _context;
         private readonly IPollExpiredSender _sender;
+        private readonly IWebMapper _mapper;
 
         public PublishService(
             ILogger<PublishService> logger,
             DataContext context,
-            IPollExpiredSender sender)
+            IPollExpiredSender sender,
+            IWebMapper mapper)
         {
             _logger = logger;
             _context = context;
             _sender = sender;
+            _mapper = mapper;
         }
 
         public async Task DoPublishAsync()
         {
             await Task.Run(() =>
             {
-                var expiredPolls = _context.Polls.Where(PollHasEnded).ToList();
+                var expiredPolls = _context.Polls
+                    .Where(PollHasEnded)
+                    .Where(PollEndedInInterval)
+                    .ToList();
+
+                Console.WriteLine($"expiredPolls.length = {expiredPolls.Count}");
+
                 foreach (var expiredPoll in expiredPolls)
                 {
-                    // TODO: Add mapping from Poll to PollPub
-                    // var mappedPoll = _mapper.MapPollToPub(expiredPoll);
-                    // _sender.SendPoll(mappedPoll);
-                    // _logger.LogInformation($"Sent poll with id {mappedPoll.id}");
+                    var mappedPoll = _mapper.MapPollToPublish(expiredPoll);
+                    _sender.SendPoll(mappedPoll);
+                    _logger.LogInformation($"Sent poll with id {mappedPoll.Id}");
                 }
             });
-            _logger.LogInformation("PublishService did something");
         }
 
-        private bool PollHasEnded(Poll poll) => poll.EndTime > DateTime.Now;
+        private bool PollHasEnded(Poll poll) => poll.EndTime < DateTime.Now;
+
+        private bool PollEndedInInterval(Poll poll) => poll.EndTime > DateTime.Now.AddMinutes(-1);
     }
 }
