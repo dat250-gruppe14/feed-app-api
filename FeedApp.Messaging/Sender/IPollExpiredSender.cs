@@ -1,9 +1,9 @@
-﻿using FeedApp.Common.Models.Entities;
+﻿using FeedApp.Common.Models.Messaging;
 
 namespace FeedApp.Messaging.Sender
 {
     public interface IPollExpiredSender
     {
-        void SendPoll(Poll poll);
+        void SendPoll(PollPub poll);
     }
 }

@@ -3,7 +3,6 @@ using FeedApp.Common.Models.Entities;
 using FeedApp.Common.Enums;
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Api.Utils;
-using FeedApp.Messaging.Sender;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
 
@@ -14,14 +13,12 @@ public class PollService : IPollService
     private readonly DataContext _context;
     private readonly IUserService _userService;
     private readonly IPollUtils _pollUtils;
-    private readonly IPollExpiredSender _pollExpiredSender;
 
-    public PollService(DataContext context, IUserService userService, IPollUtils pollUtils, IPollExpiredSender pollExpiredSender)
+    public PollService(DataContext context, IUserService userService, IPollUtils pollUtils)
     {
         _context = context;
         _userService = userService;
         _pollUtils = pollUtils;
-        _pollExpiredSender = pollExpiredSender;
     }
 
     public async Task<IEnumerable<Poll>> GetPolls(User? user)
@@ -53,8 +50,6 @@ public class PollService : IPollService
         {
             var createdPoll = _context.Polls.Add(poll);
             await _context.SaveChangesAsync();
-
-            _pollExpiredSender.SendPoll(poll);
 
             return createdPoll.Entity;
         }

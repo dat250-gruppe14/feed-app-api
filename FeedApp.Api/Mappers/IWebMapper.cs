@@ -1,4 +1,5 @@
 using FeedApp.Common.Models.Entities;
+using FeedApp.Common.Models.Messaging;
 using FeedApp.Api.Models.Web;
 
 namespace FeedApp.Api.Mappers;
@@ -11,4 +12,5 @@ public interface IWebMapper
     User MapUserCreateRequestToInternal(UserCreateRequest request);
     User MapUserUpdateRequestToInternal(UserUpdateRequest request);
     PollWeb MapVoteToWeb(Vote vote, Guid? userId);
+    PollPub MapPollToPublish(Poll poll);
 }

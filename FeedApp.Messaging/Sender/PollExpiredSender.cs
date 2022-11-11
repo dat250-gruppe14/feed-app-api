@@ -4,7 +4,7 @@ using RabbitMQ.Client;
 using Newtonsoft.Json;
 
 using FeedApp.Messaging.Options;
-using FeedApp.Common.Models.Entities;
+using FeedApp.Common.Models.Messaging;
 
 namespace FeedApp.Messaging.Sender
 {
@@ -26,7 +26,7 @@ namespace FeedApp.Messaging.Sender
             CreateConnection();
         }
 
-        public void SendPoll(Poll poll)
+        public void SendPoll(PollPub poll)
         {
             if (ConnectionExists())
             {

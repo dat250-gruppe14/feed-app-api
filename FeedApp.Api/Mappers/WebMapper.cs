@@ -1,5 +1,6 @@
 using AutoMapper;
 using FeedApp.Common.Models.Entities;
+using FeedApp.Common.Models.Messaging;
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Utils;
 
@@ -60,5 +61,10 @@ public class WebMapper : IWebMapper
         pollWeb.UserAnswer = vote.OptionSelected;
         
         return pollWeb;
+    }
+
+    public PollPub MapPollToPublish(Poll poll)
+    {
+        return _automapper.Map<PollPub>(poll);
     }
 }
