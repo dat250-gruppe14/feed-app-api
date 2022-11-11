@@ -74,4 +74,15 @@ public class PollUtils : IPollUtils
         var pollHasEnded = poll.EndTime > DateTime.Now;
         return !pollHasEnded;
     }
+
+    //public Task<IEnumerable<Poll>> GetAllPolls(DataContext context)
+    //{
+    //    return context.Polls
+    //        //.Where(PollIsPublic)
+    //        .AsEnumerable()
+            //.Where(!PollIsActive)
+    //        .ToList();
+        
+    //}
+    
 }

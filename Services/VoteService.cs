@@ -13,19 +13,21 @@ public class VoteService : IVoteService
 {
     private readonly DataContext _context;
     private readonly IPollService _pollService;
+    private readonly IDweetMessagingService _dweetService;
 
-    public VoteService(DataContext context, IPollService pollService)
+    public VoteService(
+        DataContext context, 
+        IPollService pollService,
+        IDweetMessagingService dweetService)
     {
         _context = context;
         _pollService = pollService;
+        _dweetService = dweetService;
     }
 
     public async Task<Vote?> createVote(User user, VoteCreateRequest request)
     {
 
-        
-
-        
         var pincode = request.PollPincode;
 
         var poll = await _pollService.GetPollByPincode(pincode);
@@ -57,14 +59,10 @@ public class VoteService : IVoteService
 
         await _context.SaveChangesAsync();
 
+        _dweetService.Post(vote.Poll);
+
         return createdVote.Entity;
     }
-
-
-
-
-
-
 
     
 }

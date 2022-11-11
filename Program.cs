@@ -48,6 +48,7 @@ builder.Services.AddScoped<IPollService, PollService>();
 builder.Services.AddScoped<IAuthUtils, AuthUtils>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IVoteService, VoteService>();
+builder.Services.AddScoped<IDweetMessagingService, DweetMessagingService>();
 
 // Mappers
 builder.Services.AddScoped<IWebMapper, WebMapper>();

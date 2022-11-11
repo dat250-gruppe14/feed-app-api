@@ -42,6 +42,7 @@ public class PollController : ControllerBase
 	    var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
 	    
 		var polls = await _pollService.GetPolls(currentUser);
+        Console.WriteLine(polls.GetType());
 		return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, currentUser?.Id)));
     }
 
