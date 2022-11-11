@@ -57,8 +57,8 @@ public class PollService : IPollService
             var createdPoll = _context.Polls.Add(poll);
             await _context.SaveChangesAsync();
             //var allPolls = _pollUtils.GetAllPolls(_context);
-            var h = await _dweetService.Post(poll);
-            Console.WriteLine(h);
+            var h = await _dweetService.PostNew(poll, _context);
+            Console.WriteLine(await h.Content.ReadAsStringAsync());
             return createdPoll.Entity;
         }
         catch (DbUpdateException e)

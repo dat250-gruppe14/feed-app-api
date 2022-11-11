@@ -75,14 +75,12 @@ public class PollUtils : IPollUtils
         return !pollHasEnded;
     }
 
-    //public Task<IEnumerable<Poll>> GetAllPolls(DataContext context)
-    //{
-    //    return context.Polls
-    //        //.Where(PollIsPublic)
-    //        .AsEnumerable()
-            //.Where(!PollIsActive)
-    //        .ToList();
-        
-    //}
+    public async Task<IEnumerable<Poll>> GetAllPolls(DataContext context)
+    {
+
+        var polls = await context.Polls.ToListAsync();
+        return polls;
+
+    }
     
 }

@@ -2,9 +2,11 @@ using FeedAppApi.Models.Web;
 using FeedAppApi.Models.Entities;
 using FeedAppApi.Proxies.Data;
 using FeedAppApi.Enums;
+using FeedAppApi.Utils;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 
 namespace FeedAppApi.Services;
 
@@ -18,7 +20,8 @@ public class VoteService : IVoteService
     public VoteService(
         DataContext context, 
         IPollService pollService,
-        IDweetMessagingService dweetService)
+        IDweetMessagingService dweetService,
+        IPollUtils pollUtils)
     {
         _context = context;
         _pollService = pollService;
@@ -59,7 +62,9 @@ public class VoteService : IVoteService
 
         await _context.SaveChangesAsync();
 
-        _dweetService.Post(vote.Poll);
+        //var allPolls = _pollUtils.GetAllPolls(_context);
+        var h = await _dweetService.PostUpdate(vote.Poll, _context);
+        Console.WriteLine(await h.Content.ReadAsStringAsync());
 
         return createdVote.Entity;
     }
