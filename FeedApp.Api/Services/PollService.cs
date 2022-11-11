@@ -1,8 +1,8 @@
 using FeedApp.Common.Exceptions;
 using FeedApp.Common.Models.Entities;
+using FeedApp.Common.Enums;
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Api.Utils;
-using FeedApp.Messaging.Sender;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
 
@@ -13,14 +13,12 @@ public class PollService : IPollService
     private readonly DataContext _context;
     private readonly IUserService _userService;
     private readonly IPollUtils _pollUtils;
-    private readonly IPollExpiredSender _pollExpiredSender;
 
-    public PollService(DataContext context, IUserService userService, IPollUtils pollUtils, IPollExpiredSender pollExpiredSender)
+    public PollService(DataContext context, IUserService userService, IPollUtils pollUtils)
     {
         _context = context;
         _userService = userService;
         _pollUtils = pollUtils;
-        _pollExpiredSender = pollExpiredSender;
     }
 
     public async Task<IEnumerable<Poll>> GetPolls(User? user)
@@ -53,8 +51,6 @@ public class PollService : IPollService
             var createdPoll = _context.Polls.Add(poll);
             await _context.SaveChangesAsync();
 
-            _pollExpiredSender.SendPoll(poll);
-
             return createdPoll.Entity;
         }
         catch (DbUpdateException e)
@@ -63,13 +59,13 @@ public class PollService : IPollService
         }
     }
 
-    public async Task<Poll?> DeletePoll(string pincode, Guid? userId)
+    public async Task<Poll?> DeletePoll(string pincode, User? user)
     {
         var poll = await GetPollByPincode(pincode);
 
         if (poll == null)
             return null;
-        if (userId == null || poll.Owner.Id != userId)
+        if (user == null || poll.Owner.Id != user.Id && user.Role != UserRole.Admin)
             throw new NoAccessException($"User doesn't own this poll");
         
         _context.Polls.Remove(poll);

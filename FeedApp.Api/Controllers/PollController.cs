@@ -1,11 +1,13 @@
 using System.Net;
 using FeedApp.Api.Errors;
-using FeedApp.Common.Exceptions;
-using FeedApp.Common.Models.Entities;
 using FeedApp.Api.Mappers;
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Services;
 using FeedApp.Api.Utils;
+using FeedApp.Common.Exceptions;
+using FeedApp.Common.Enums;
+using FeedApp.Common.Models.Entities;
+using FeedApp.Messaging.Sender;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
@@ -22,17 +24,20 @@ public class PollController : ControllerBase
     private readonly IPollService _pollService;
     private readonly IWebMapper _webMapper;
     private readonly IAuthUtils _authUtils;
+    private readonly IPollExpiredSender _pollExpiredSender;
 
     public PollController(
 	    ILogger<PollController> logger,
 	    IPollService pollService,
 	    IWebMapper webMapper,
-	    IAuthUtils authUtils)
+	    IAuthUtils authUtils,
+        IPollExpiredSender pollExpiredSender)
     {
         _logger = logger;
         _pollService = pollService;
         _webMapper = webMapper;
         _authUtils = authUtils;
+        _pollExpiredSender = pollExpiredSender;
     }
 
     [HttpGet(Name = "GetPolls")]
@@ -45,15 +50,22 @@ public class PollController : ControllerBase
 		return Ok(polls.Select(poll => _webMapper.MapPollToWeb(poll, currentUser?.Id)));
     }
 
+    [AllowAnonymous]
     [HttpGet("{pincode}", Name = "GetPollByPincode")]
     public async Task<IActionResult> GetPollByPincode([FromRoute] string pincode)
     {
 	    var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
 	    
         var poll = await _pollService.GetPollByPincode(pincode);
-        return poll != null
-	        ? Ok(_webMapper.MapPollToWeb(poll, currentUser?.Id))
-	        : ResponseUtils.NotFoundResponse($"Poll with pincode {pincode} doesn't exist");
+        if (poll == null)
+	        return ResponseUtils.NotFoundResponse($"Poll with pincode {pincode} doesn't exist");
+
+        if (currentUser == null && poll.Access == PollAccess.Private)
+        {
+	        return ResponseUtils.UnauthorizedResponse("Log in to access private polls.");
+        }
+
+        return Ok(_webMapper.MapPollToWeb(poll, currentUser?.Id));
     }
 
     [HttpPost(Name = "CreatePoll")]
@@ -63,6 +75,7 @@ public class PollController : ControllerBase
 	    {
 			var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
 	        var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest), currentUser);
+            _pollExpiredSender.SendPoll(_webMapper.MapPollToPublish(poll));
 	        return Ok(_webMapper.MapPollToWeb(poll, null, false));
 	    }
 	    catch (EfCoreException e)
@@ -96,7 +109,7 @@ public class PollController : ControllerBase
 	    
 	    try
 	    {
-		    var poll = await _pollService.DeletePoll(pincode, currentUser?.Id);
+		    var poll = await _pollService.DeletePoll(pincode, currentUser);
 
 		    if (poll == null)
 		    {

@@ -15,7 +15,7 @@ using FeedApp.Common.Exceptions;
 namespace FeedAppApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/poll/{pincode}/vote")]
 [LoggedInUserFilter]
 public class VoteController : ControllerBase 
 {
@@ -38,26 +38,27 @@ public class VoteController : ControllerBase
     }
 
     [HttpPost(Name = "CreateVote")]
-    public async Task<IActionResult> CreateVote([FromBody] VoteCreateRequest req)
+    public async Task<IActionResult> CreateVote([FromRoute] string pincode, [FromBody] VoteCreateRequest req)
     {
         var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
-        var vote = await _voteService.createVote(currentUser, req);
-
-
-        if (vote == null)
+        req.PollPincode = pincode;
+        try
         {
-            return BadRequest();
+            var vote = await _voteService.createVote(currentUser, req);
+            return Ok(_webMapper.MapVoteToWeb(vote, currentUser?.Id));
         }
-        if (currentUser == null)
+        catch (NotFoundException e)
         {
-            return Ok(_webMapper.MapVoteToWeb(vote, null));
+            return ResponseUtils.NotFoundResponse(e.Message);
         }
-        else
+        catch (EfCoreException e)
         {
-            return Ok(_webMapper.MapVoteToWeb(vote, currentUser.Id));
+            return BadRequest(new ApiErrorResponse
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = e.Message
+            });
         }
-
-        
     }
 
       

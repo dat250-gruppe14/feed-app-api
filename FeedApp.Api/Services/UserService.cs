@@ -98,4 +98,10 @@ public class UserService : IUserService
             .Include(u => u.Votes)
             .FirstOrDefault();
     }
+
+    public async Task<IEnumerable<User>?> GetAllUsers(User? user)
+    {
+        if (user is not {Role: UserRole.Admin}) return null;
+        return await _context.Users.ToListAsync();
+    }
 }
