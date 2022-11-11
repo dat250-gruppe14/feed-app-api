@@ -49,6 +49,7 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<IPollService, PollService>();
 builder.Services.AddScoped<IAuthUtils, AuthUtils>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IVoteService, VoteService>();
 
 // Mappers
 builder.Services.AddScoped<IWebMapper, WebMapper>();
@@ -92,6 +93,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 app.UseCors(webClientOrigins);
 app.UseAuthentication();

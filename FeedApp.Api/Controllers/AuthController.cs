@@ -32,10 +32,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginWeb credetials)
+    public async Task<IActionResult> Login([FromBody] LoginWeb credentials)
     {
-        var user = await _userService.GetUserByEmail(credetials.Email);
-        if (user == null || !_passwordUtils.VerifyPassword(credetials.Password, user.PasswordSalt, user.PasswordHash))
+        var user = await _userService.GetUserByEmail(credentials.Email);
+        if (user == null || !_passwordUtils.VerifyPassword(credentials.Password, user.PasswordSalt, user.PasswordHash))
         {
             return Unauthorized(new ApiErrorResponse
             {
@@ -49,25 +49,25 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterWeb credetials)
+    public async Task<IActionResult> Register([FromBody] RegisterWeb credentials)
     {
-        var existingUser = await _userService.GetUserByEmail(credetials.Email);
+        var existingUser = await _userService.GetUserByEmail(credentials.Email);
         if (existingUser != null)
         {
             return BadRequest(new ApiErrorResponse
             {
-                Message = $"User with email {credetials.Email} already exist.",
+                Message = $"User with email {credentials.Email} already exist.",
                 Status = HttpStatusCode.BadRequest
             });
         }
 
         var salt = _passwordUtils.GenerateSalt();
-        var hash = _passwordUtils.HashPassword(credetials.Password, salt);
+        var hash = _passwordUtils.HashPassword(credentials.Password, salt);
 
         var user = new User
         {
-            Email = credetials.Email,
-            Name = credetials.Name,
+            Email = credentials.Email,
+            Name = credentials.Name,
             PasswordHash = hash,
             PasswordSalt = salt
         };

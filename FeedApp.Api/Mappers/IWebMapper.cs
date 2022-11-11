@@ -10,4 +10,5 @@ public interface IWebMapper
     UserWeb MapUserToWeb(User user);
     User MapUserCreateRequestToInternal(UserCreateRequest request);
     User MapUserUpdateRequestToInternal(UserUpdateRequest request);
+    VoteWeb MapVoteToWeb(Vote vote, Guid? userId);
 }
