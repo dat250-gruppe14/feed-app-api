@@ -14,6 +14,10 @@ public class PollUtils : IPollUtils
         var optionTwoCount = 0;
         UserAnswer? userAnswer = null;
 
+        if (poll.Votes == null) { 
+            poll.Votes = new List<Vote>();
+        }
+
         foreach (var vote in poll.Votes.AsParallel())
         {
             if (vote.OptionSelected == UserAnswer.AnwerOne)
