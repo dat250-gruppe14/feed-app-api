@@ -3,6 +3,7 @@ using System;
 using FeedAppApi.Proxies.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FeedAppApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221113115604_adddevicevote")]
+    partial class adddevicevote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +46,6 @@ namespace FeedAppApi.Migrations
                     b.Property<string>("hashedConnectionKey")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool?>("isActive")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("salt")
                         .HasColumnType("text");
@@ -225,7 +224,7 @@ namespace FeedAppApi.Migrations
                         .HasForeignKey("DeviceId");
 
                     b.HasOne("FeedAppApi.Models.Entities.Poll", "Poll")
-                        .WithMany("DeviceVotes")
+                        .WithMany()
                         .HasForeignKey("PollId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -265,8 +264,6 @@ namespace FeedAppApi.Migrations
 
             modelBuilder.Entity("FeedAppApi.Models.Entities.Poll", b =>
                 {
-                    b.Navigation("DeviceVotes");
-
                     b.Navigation("Votes");
                 });
 

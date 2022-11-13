@@ -3,6 +3,7 @@ using System;
 using FeedAppApi.Proxies.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FeedAppApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221110141807_adddevice")]
+    partial class adddevice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,19 +38,11 @@ namespace FeedAppApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("UserId")
+                        .IsRequired()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("connectionToken")
-                        .HasColumnType("text");
 
                     b.Property<string>("hashedConnectionKey")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool?>("isActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("salt")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -71,12 +65,6 @@ namespace FeedAppApi.Migrations
 
                     b.Property<Guid?>("DeviceId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("Option1")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Option2")
-                        .HasColumnType("integer");
 
                     b.Property<Guid>("PollId")
                         .HasColumnType("uuid");
@@ -211,7 +199,9 @@ namespace FeedAppApi.Migrations
 
                     b.HasOne("FeedAppApi.Models.Entities.User", "User")
                         .WithMany("Devices")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ConnectedPoll");
 
@@ -225,7 +215,7 @@ namespace FeedAppApi.Migrations
                         .HasForeignKey("DeviceId");
 
                     b.HasOne("FeedAppApi.Models.Entities.Poll", "Poll")
-                        .WithMany("DeviceVotes")
+                        .WithMany()
                         .HasForeignKey("PollId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -265,8 +255,6 @@ namespace FeedAppApi.Migrations
 
             modelBuilder.Entity("FeedAppApi.Models.Entities.Poll", b =>
                 {
-                    b.Navigation("DeviceVotes");
-
                     b.Navigation("Votes");
                 });
 

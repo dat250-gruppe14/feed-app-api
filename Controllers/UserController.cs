@@ -1,7 +1,3 @@
-using System;
-using System.Net;
-using System.Threading.Tasks;
-using FeedAppApi.Errors;
 using FeedAppApi.Mappers;
 using FeedAppApi.Models.Web;
 using FeedAppApi.Services;
