@@ -101,4 +101,24 @@ public class UserService : IUserService
             .Include(u => u.Votes)
             .FirstOrDefault();
     }
+
+    public Task<Device> createDevice(Device device)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Device?> editDevice(Guid Id, Device updatedDevice)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Device?> deleteDevice(string deviceId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Device?> getDevices(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -12,6 +12,8 @@ namespace FeedAppApi.Proxies.Data
 		public DbSet<Poll> Polls { get; set; } = null!;
 		public DbSet<User> Users { get; set; } = null!;
 		public DbSet<Vote> Votes { get; set; } = null!;
+		public DbSet<Device> Devices { get; set; } = null!;
+		public DbSet<DeviceVote> DeviceVotes { get; set; } = null!;
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -29,6 +31,15 @@ namespace FeedAppApi.Proxies.Data
 		    
 		    // Vote
 		    modelBuilder.Entity<Vote>().ToTable("vote");
+
+		    // VoteDevice
+		    modelBuilder.Entity<Device>().ToTable("device");
+		    modelBuilder.Entity<Device>()
+			    .HasIndex(p => p.Id)
+			    .IsUnique();
+		    
+		    // DeviceVote
+		    modelBuilder.Entity<DeviceVote>().ToTable("device_vote");
 		}
 	}
 

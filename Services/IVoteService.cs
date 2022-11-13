@@ -12,7 +12,4 @@ namespace FeedAppApi.Services;
 public interface IVoteService
 {
     public Task<Vote?> createVote(User user, VoteCreateRequest request);
-
-
-
 }
