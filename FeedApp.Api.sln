@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeedApp.Common", "FeedApp.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeedApp.Messaging", "FeedApp.Messaging\FeedApp.Messaging.csproj", "{7616661F-F79C-4C35-93F4-CB6AFC1C11B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeedApp.Service", "FeedApp.Service\FeedApp.Service.csproj", "{9B1F0B4B-D1C2-4F26-8E11-FB7A75CCA808}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeedApp.Service", "FeedApp.Service\FeedApp.Service.csproj", "{9B1F0B4B-D1C2-4F26-8E11-FB7A75CCA808}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81C91088-8C82-4770-8630-2174B7D42719}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{9B1F0B4B-D1C2-4F26-8E11-FB7A75CCA808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B1F0B4B-D1C2-4F26-8E11-FB7A75CCA808}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B1F0B4B-D1C2-4F26-8E11-FB7A75CCA808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81C91088-8C82-4770-8630-2174B7D42719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C91088-8C82-4770-8630-2174B7D42719}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C91088-8C82-4770-8630-2174B7D42719}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C91088-8C82-4770-8630-2174B7D42719}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
