@@ -93,7 +93,7 @@ public class AuthController : ControllerBase
             });
         }
 
-        var tokenIsValid = _authUtils.ValidateExpiredToken(token);
+        var tokenIsValid = _authUtils.ValidateToken(token, false);
 
         if (!tokenIsValid)
         {

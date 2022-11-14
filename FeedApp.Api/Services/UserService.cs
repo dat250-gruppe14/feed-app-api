@@ -90,6 +90,8 @@ public class UserService : IUserService
     {
         var token = _authUtils.GetTokenFromHttpContext(httpContext);
         if (token == null) return null;
+        if (!_authUtils.ValidateToken(token)) return null;
+        
         var userId = _authUtils.GetUserIdFromToken(token);
         if (userId == null) return null;
         

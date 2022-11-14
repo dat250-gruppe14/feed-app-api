@@ -1,7 +1,9 @@
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Proxies.Data;
+using FeedApp.Common.Enums;
 using FeedApp.Common.Models.Entities;
 using FeedApp.Common.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace FeedApp.Api.Services;
 
@@ -24,18 +26,22 @@ public class VoteService : IVoteService
 
         if (poll == null) throw new NotFoundException($"Poll with pincode {pincode} doesn't exist.");
 
-        var vote = new Vote();
-        vote.OptionSelected = request.OptionSelected;
+        if (user == null && poll.Access == PollAccess.Private)
+        {
+            throw new NoAccessException("Only logged in users can vote on private polls.");
+        }
+
+        var vote = new Vote
+        {
+            OptionSelected = request.OptionSelected
+        };
         if (user != null)
         {
             //A user can only vote once on each poll
-            var votes = _context.Votes.Where(v => v.UserId == user.Id);
-            foreach (var v in votes)
+            var votes = await _context.Votes.Where(v => v.UserId == user.Id).ToListAsync();
+            if (votes.Any(v => v.PollId == poll.Id))
             {
-                if (v.PollId == poll.Id)
-                {
-                    throw new EfCoreException("You have already voted on this poll.");
-                }
+                throw new EfCoreException("You have already voted on this poll.");
             }
             vote.UserId = user.Id;
         }
