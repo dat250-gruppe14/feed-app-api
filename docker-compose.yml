@@ -6,10 +6,21 @@ services:
     build:
       context: .
       dockerfile: FeedApp.Api/Dockerfile
+    environment:
+        - ConnectionStrings__PostgreSql="Host=localhost;Username=postgres;Password=;Database=testdb"
+        - RabbitMq__Hostname="localhost"
+        - RabbitMq__QueueName="polls"
+        - RabbitMq__UserName="guest"
+        - RabbitMq__Password="guest"
 
   feedapp.service:
     image: ${DOCKER_REGISTRY-}feedappservice
     build:
       context: .
       dockerfile: FeedApp.Service/Dockerfile
-
+    environment:
+        - ConnectionStrings__PostgreSql="Host=localhost;Username=postgres;Password=;Database=testdb"
+        - RabbitMq__Hostname="localhost"
+        - RabbitMq__QueueName="polls"
+        - RabbitMq__UserName="guest"
+        - RabbitMq__Password="guest"
