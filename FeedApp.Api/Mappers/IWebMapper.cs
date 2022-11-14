@@ -11,6 +11,11 @@ public interface IWebMapper
     UserWeb MapUserToWeb(User user);
     User MapUserCreateRequestToInternal(UserCreateRequest request);
     User MapUserUpdateRequestToInternal(UserUpdateRequest request);
-    PollWeb MapVoteToWeb(Vote vote, Guid? userId);
+    VoteWeb MapVoteToWeb(Vote vote, Guid? userId);
+
+    DeviceWeb MapDeviceToWeb(Device device, Guid? userId);
+    Device MapDeviceCreateRequestToInternal(DeviceCreateRequest request);
+    Device MapDeviceUpdateRequestToInternal(DeviceUpdateRequest request);
+    DeviceVote MapDevicVoteCreateRequestToInternal(DeviceVoteCreateRequest request);
     PollPub MapPollToPublish(Poll poll);
 }

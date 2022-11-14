@@ -1,4 +1,3 @@
-using FeedApp.Api.Errors;
 using FeedApp.Api.Mappers;
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Services;

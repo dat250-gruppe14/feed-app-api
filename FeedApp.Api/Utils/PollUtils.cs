@@ -29,6 +29,11 @@ public class PollUtils : IPollUtils
                 userAnswer = vote.OptionSelected;
             }
         }
+        foreach (var vote in poll.DeviceVotes.AsParallel())
+        {
+			optionOneCount = Interlocked.Add(ref optionOneCount, vote.Option1);
+			optionTwoCount = Interlocked.Add(ref optionTwoCount, vote.Option2);
+        }
 
         return new Records.PollStats(optionOneCount, optionTwoCount, userAnswer);
     }

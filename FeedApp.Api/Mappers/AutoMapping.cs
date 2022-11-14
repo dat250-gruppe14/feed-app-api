@@ -17,6 +17,10 @@ public class AutoMapping : Profile
         CreateMap<UserCreateRequest, User>();
         CreateMap<UserUpdateRequest, User>();
         CreateMap<Vote, VoteWeb>();
+        CreateMap<Device, DeviceWeb>();
+        CreateMap<DeviceCreateRequest, Device>();
+        CreateMap<DeviceUpdateRequest, Device>();
+        CreateMap<DeviceVoteCreateRequest, DeviceVote>();
         CreateMap<Poll, PollPub>();
         CreateMap<User, UserPub>();
     }

@@ -27,4 +27,5 @@ public class Poll {
 	public Guid OwnerId { get; set; }
 	public virtual User Owner { get; set; }
 	public virtual IEnumerable<Vote> Votes { get; set; }
+	public virtual IEnumerable<DeviceVote> DeviceVotes { get; set; }
 }

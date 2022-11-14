@@ -21,5 +21,6 @@ public class User
     public DateTime? RefreshTokenExpires { get; set; }
     
     public virtual IEnumerable<Poll> Polls { get; set; }
+    public virtual IEnumerable<Device> Devices { get; set; }
     public virtual IEnumerable<Vote> Votes { get; set; }
 }
