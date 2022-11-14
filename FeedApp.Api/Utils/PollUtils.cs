@@ -14,9 +14,8 @@ public class PollUtils : IPollUtils
         var optionTwoCount = 0;
         UserAnswer? userAnswer = null;
 
-        if (poll.Votes == null) { 
-            poll.Votes = new List<Vote>();
-        }
+        poll.Votes ??= new List<Vote>();
+        poll.DeviceVotes ??= new List<DeviceVote>();
 
         foreach (var vote in poll.Votes.AsParallel())
         {
@@ -80,7 +79,7 @@ public class PollUtils : IPollUtils
         var pollIsAlwaysOpen = poll.EndTime == null;
         if (pollIsAlwaysOpen) return true;
 
-        var pollHasEnded = poll.EndTime > DateTime.Now;
+        var pollHasEnded = poll.EndTime < DateTime.Now;
         return !pollHasEnded;
     }
 }

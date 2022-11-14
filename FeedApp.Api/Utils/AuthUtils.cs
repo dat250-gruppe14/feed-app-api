@@ -65,7 +65,7 @@ public class AuthUtils : IAuthUtils
         return Convert.ToBase64String(randomNumber);
     }
 
-    public bool ValidateExpiredToken(string token)
+    public bool ValidateToken(string token, bool checkExpired = true)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         SecurityToken validatedToken;
@@ -80,7 +80,8 @@ public class AuthUtils : IAuthUtils
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
-                ValidateLifetime = false
+                ValidateLifetime = checkExpired,
+                LifetimeValidator = (_, expires, _, _) => expires >= DateTime.UtcNow,
             }, out validatedToken);
             return true;
         }
@@ -95,7 +96,7 @@ public class AuthUtils : IAuthUtils
         string? token;
         try
         {
-            return httpContext.Request.Headers.Authorization[0][7..];
+            return httpContext.Request.Headers.Authorization[0]?[7..];
         }
         catch (IndexOutOfRangeException)
         {

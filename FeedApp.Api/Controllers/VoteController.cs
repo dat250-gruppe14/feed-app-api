@@ -1,18 +1,13 @@
-using System;
 using System.Net;
-using System.Threading.Tasks;
 using FeedApp.Api.Errors;
 using FeedApp.Api.Mappers;
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using FeedApp.Api.Utils;
-using FeedApp.Common.Models.Entities;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Authorization;
 using FeedApp.Common.Exceptions;
 
-namespace FeedAppApi.Controllers;
+namespace FeedApp.Api.Controllers;
 
 [ApiController]
 [Route("api/poll/{pincode}/vote")]
@@ -22,8 +17,8 @@ public class VoteController : ControllerBase
 
     private readonly ILogger<VoteController> _logger;
     private readonly IVoteService _voteService;
-    private IWebMapper _webMapper;
-    private IAuthUtils _authUtils;
+    private readonly IWebMapper _webMapper;
+    private readonly IAuthUtils _authUtils;
 
     public VoteController(
         ILogger<VoteController> logger, 
@@ -45,7 +40,7 @@ public class VoteController : ControllerBase
         try
         {
             var vote = await _voteService.createVote(currentUser, req);
-            return Ok(_webMapper.MapVoteToWeb(vote, currentUser?.Id));
+            return Ok(_webMapper.MapPollToWeb(vote.Poll, currentUser?.Id));
         }
         catch (NotFoundException e)
         {
@@ -59,10 +54,10 @@ public class VoteController : ControllerBase
                 Message = e.Message
             });
         }
+        catch (NoAccessException e)
+        {
+            return ResponseUtils.UnauthorizedResponse(e.Message);
+        }
     }
-
-      
-        
-    
 
 }
