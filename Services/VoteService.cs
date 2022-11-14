@@ -63,8 +63,8 @@ public class VoteService : IVoteService
         await _context.SaveChangesAsync();
 
         //var allPolls = _pollUtils.GetAllPolls(_context);
-        var h = await _dweetService.PostUpdate(vote.Poll, _context);
-        Console.WriteLine(await h.Content.ReadAsStringAsync());
+        await _dweetService.PostPoll(vote.Poll, true);
+        
 
         return createdVote.Entity;
     }
