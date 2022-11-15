@@ -8,4 +8,5 @@ public interface IPollUtils
     Records.PollStats CountPollVotes(Poll poll, Guid? userId);
     Task<IEnumerable<Poll>> GetOngoingPollsAuth(DataContext context, User? user);
     string GeneratePincode();
+    bool PollIsActive(Poll poll);
 }

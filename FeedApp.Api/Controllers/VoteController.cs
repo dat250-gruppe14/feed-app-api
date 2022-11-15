@@ -58,6 +58,14 @@ public class VoteController : ControllerBase
         {
             return ResponseUtils.UnauthorizedResponse(e.Message);
         }
+        catch (NotAllowedException e)
+        {
+            return BadRequest(new ApiErrorResponse
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = e.Message
+            });
+        }
     }
 
 }

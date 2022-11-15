@@ -1,6 +1,7 @@
 
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Api.Utils;
+using FeedApp.Common.Exceptions;
 using FeedApp.Common.Models.Entities;
 
 namespace FeedApp.Api.Services;
@@ -11,7 +12,11 @@ public class DeviceService : IDeviceService
 	private readonly IPasswordUtils _passwordUtils;
 	private readonly DataContext _context;
 
-    public DeviceService(IAuthUtils authUtils, DataContext context, IPasswordUtils passwordUtils)
+    public DeviceService(
+	    IAuthUtils authUtils,
+	    DataContext context,
+	    IPasswordUtils passwordUtils
+	)
     {
 		_authUtils = authUtils;
 		_context = context;
@@ -22,6 +27,13 @@ public class DeviceService : IDeviceService
     {
 		deviceVote.DeviceId = device.Id;
 		deviceVote.PollId = device.PollId;
+
+		var poll = await _context.Polls.FindAsync(deviceVote.PollId);
+		if (poll is null)
+		{
+			throw new NotAllowedException("Not allowed to vote on inactive polls.");
+		}
+		
 		var vote = _context.DeviceVotes.Add(deviceVote);
 		await _context.SaveChangesAsync();
 		return vote.Entity;

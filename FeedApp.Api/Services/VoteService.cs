@@ -1,5 +1,6 @@
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Proxies.Data;
+using FeedApp.Api.Utils;
 using FeedApp.Common.Enums;
 using FeedApp.Common.Models.Entities;
 using FeedApp.Common.Exceptions;
@@ -12,11 +13,13 @@ public class VoteService : IVoteService
 {
     private readonly DataContext _context;
     private readonly IPollService _pollService;
+    private readonly IPollUtils _pollUtils;
 
-    public VoteService(DataContext context, IPollService pollService)
+    public VoteService(DataContext context, IPollService pollService, IPollUtils pollUtils)
     {
         _context = context;
         _pollService = pollService;
+        _pollUtils = pollUtils;
     }
 
     public async Task<Vote> createVote(User? user, VoteCreateRequest request)
@@ -25,6 +28,11 @@ public class VoteService : IVoteService
         var poll = await _pollService.GetPollByPincode(pincode);
 
         if (poll == null) throw new NotFoundException($"Poll with pincode {pincode} doesn't exist.");
+
+        if (!_pollUtils.PollIsActive(poll))
+        {
+            throw new NotAllowedException("Not allowed to vote on inactive polls.");
+        }
 
         if (user == null && poll.Access == PollAccess.Private)
         {
