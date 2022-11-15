@@ -3,8 +3,6 @@ using FeedApp.Api.Mappers;
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Api.Services;
 using FeedApp.Api.Utils;
-using FeedApp.Messaging.Options;
-using FeedApp.Messaging.Sender;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -52,13 +50,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IVoteService, VoteService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDeviceManagerService, DeviceManagerService>();
+builder.Services.AddScoped<IDweetMessagingService, DweetMessagingService>();
 
 // Mappers
 builder.Services.AddScoped<IWebMapper, WebMapper>();
-
-// Messaging
-builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMq"));
-builder.Services.AddTransient<IPollExpiredSender, PollExpiredSender>();
 
 // Utils
 builder.Services.AddScoped<IPollUtils, PollUtils>();

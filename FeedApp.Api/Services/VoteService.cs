@@ -13,12 +13,19 @@ public class VoteService : IVoteService
 {
     private readonly DataContext _context;
     private readonly IPollService _pollService;
+    private readonly IDweetMessagingService _dweetService;
     private readonly IPollUtils _pollUtils;
 
-    public VoteService(DataContext context, IPollService pollService, IPollUtils pollUtils)
+    public VoteService(
+        DataContext context,
+        IPollService pollService,
+        IDweetMessagingService dweetService,
+        IPollUtils pollUtils
+    )
     {
         _context = context;
         _pollService = pollService;
+        _dweetService = dweetService;
         _pollUtils = pollUtils;
     }
 
@@ -28,7 +35,7 @@ public class VoteService : IVoteService
         var poll = await _pollService.GetPollByPincode(pincode);
 
         if (poll == null) throw new NotFoundException($"Poll with pincode {pincode} doesn't exist.");
-
+        
         if (!_pollUtils.PollIsActive(poll))
         {
             throw new NotAllowedException("Not allowed to vote on inactive polls.");
@@ -61,6 +68,8 @@ public class VoteService : IVoteService
         var createdVote = _context.Votes.Add(vote);
 
         await _context.SaveChangesAsync();
+        
+        await _dweetService.PostPoll(vote.Poll, true);
 
         return createdVote.Entity;
     }
