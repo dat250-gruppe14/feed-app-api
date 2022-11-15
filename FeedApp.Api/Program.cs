@@ -1,0 +1,119 @@
+using System.Text;
+using FeedApp.Api.Mappers;
+using FeedApp.Api.Proxies.Data;
+using FeedApp.Api.Services;
+using FeedApp.Api.Utils;
+using FeedApp.Messaging.Options;
+using FeedApp.Messaging.Sender;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+var  webClientOrigins = "_webClientOrigins";
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+// Authentication (https://www.infoworld.com/article/3669188/how-to-implement-jwt-authentication-in-aspnet-core-6.html)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        LifetimeValidator = (_, expires, _, _) => expires >= DateTime.UtcNow,
+        ValidateIssuerSigningKey = true
+    };
+});
+builder.Services.AddAuthorization();
+
+// AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
+
+// Services
+builder.Services.AddScoped<IPollService, PollService>();
+builder.Services.AddScoped<IAuthUtils, AuthUtils>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IVoteService, VoteService>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IDeviceManagerService, DeviceManagerService>();
+builder.Services.AddScoped<IDweetMessagingService, DweetMessagingService>();
+
+// Mappers
+builder.Services.AddScoped<IWebMapper, WebMapper>();
+
+// Messaging
+builder.Services.Configure<RabbitMqConfiguration>(builder.Configuration.GetSection("RabbitMq"));
+builder.Services.AddTransient<IPollExpiredSender, PollExpiredSender>();
+
+// Utils
+builder.Services.AddScoped<IPollUtils, PollUtils>();
+builder.Services.AddScoped<IAuthUtils, AuthUtils>();
+builder.Services.AddScoped<IPasswordUtils, PasswordUtils>();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c => {
+    c.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer"
+    });
+});
+
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql"));
+    options.UseLazyLoadingProxies();
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: webClientOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://localhost:3000",
+                                              "https://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+                      });
+});
+
+var app = builder.Build();
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+app.UseCors(webClientOrigins);
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
