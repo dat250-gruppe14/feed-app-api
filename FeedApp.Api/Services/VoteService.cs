@@ -3,6 +3,7 @@ using FeedApp.Api.Proxies.Data;
 using FeedApp.Common.Enums;
 using FeedApp.Common.Models.Entities;
 using FeedApp.Common.Exceptions;
+using FeedApp.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FeedApp.Api.Services;
@@ -12,11 +13,13 @@ public class VoteService : IVoteService
 {
     private readonly DataContext _context;
     private readonly IPollService _pollService;
+    private readonly IDweetMessagingService _dweetService;
 
-    public VoteService(DataContext context, IPollService pollService)
+    public VoteService(DataContext context, IPollService pollService, IDweetMessagingService dweetService)
     {
         _context = context;
         _pollService = pollService;
+        _dweetService = dweetService;
     }
 
     public async Task<Vote> createVote(User? user, VoteCreateRequest request)
@@ -53,6 +56,8 @@ public class VoteService : IVoteService
         var createdVote = _context.Votes.Add(vote);
 
         await _context.SaveChangesAsync();
+
+        await _dweetService.PostPoll(vote.Poll, true);
 
         return createdVote.Entity;
     }

@@ -1,11 +1,7 @@
+using FeedApp.Common.Models.Entities;
 
 
-using FeedAppApi.Mappers;
-using FeedAppApi.Models.Entities;
-using FeedAppApi.Models.Web;
-
-
-namespace FeedAppApi.Services;
+namespace FeedApp.Api.Services;
 
 public interface IDweetMessagingService
 {

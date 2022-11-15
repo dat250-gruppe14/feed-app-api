@@ -1,10 +1,10 @@
+using FeedApp.Api.Mappers;
+using FeedApp.Common.Models.Entities;
+using FeedApp.Api.Models.Web;
 
-using FeedAppApi.Mappers;
-using FeedAppApi.Models.Entities;
-using FeedAppApi.Models.Web;
 
 
-namespace FeedAppApi.Services;
+namespace FeedApp.Api.Services;
 
 public class DweetMessagingService : IDweetMessagingService
 {

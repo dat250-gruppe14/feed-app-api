@@ -1,6 +1,6 @@
 
 
-namespace FeedAppApi.Models.Web;
+namespace FeedApp.Api.Models.Web;
 
 public class LogDweet
 {

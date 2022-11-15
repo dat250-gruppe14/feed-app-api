@@ -3,6 +3,7 @@ using FeedApp.Common.Models.Entities;
 using FeedApp.Common.Enums;
 using FeedApp.Api.Proxies.Data;
 using FeedApp.Api.Utils;
+using FeedApp.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
 
@@ -92,6 +93,8 @@ public class PollService : IPollService
         pollDocument.ApplyTo(poll);
 
         await _context.SaveChangesAsync();
+
+        await _dweetService.PostPoll(poll, true);
 
         return poll;
     }
