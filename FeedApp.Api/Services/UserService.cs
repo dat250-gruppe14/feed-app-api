@@ -10,11 +10,13 @@ public class UserService : IUserService
 {
     private readonly DataContext _context;
     private readonly IAuthUtils _authUtils;
+    private readonly IPasswordUtils _passwordUtils;
 
-    public UserService(DataContext context, IAuthUtils authUtils)
+    public UserService(DataContext context, IAuthUtils authUtils, IPasswordUtils passwordUtils)
     {
         _context = context;
         _authUtils = authUtils;
+        _passwordUtils = passwordUtils;
     }
 
     public async Task<User> createUser(User user)
@@ -77,7 +79,10 @@ public class UserService : IUserService
     {
         var user = await _context.Users.FindAsync(userId);
         if (user == null) return null;
-        user.RefreshToken = refreshToken;
+
+        var hashedRefreshToken = _passwordUtils.HashPassword(refreshToken, user.PasswordSalt);
+        
+        user.RefreshToken = hashedRefreshToken;
         user.RefreshTokenExpires = DateTime.Now.AddDays(7).ToUniversalTime();
 
         _context.Users.Update(user);

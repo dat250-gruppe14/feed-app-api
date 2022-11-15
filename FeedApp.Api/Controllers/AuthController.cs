@@ -120,7 +120,9 @@ public class AuthController : ControllerBase
             return ResponseUtils.UnauthorizedResponse("JWT token not verified");
         }
 
-        if (user.RefreshToken != refreshToken || user.RefreshTokenExpires < DateTime.UtcNow)
+        if (user.RefreshToken != null
+            && !_passwordUtils.VerifyPassword(refreshToken, user.PasswordSalt, user.RefreshToken)
+            || user.RefreshTokenExpires < DateTime.UtcNow)
         {
             return Unauthorized(new ApiErrorResponse
             {
@@ -138,15 +140,18 @@ public class AuthController : ControllerBase
         var token = _authUtils.GenerateToken(userId);
         var refreshToken = _authUtils.GenerateRefreshToken();
 
-        await _userService.UpdateRefreshToken(userId, refreshToken);
-        
-        httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+        var updatedUser = await _userService.UpdateRefreshToken(userId, refreshToken);
+
+        if (updatedUser != null)
         {
-            Expires = DateTimeOffset.UtcNow.AddDays(7),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None
-        });
+            httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+        }
 
         return token;
     }
