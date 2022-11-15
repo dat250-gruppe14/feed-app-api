@@ -56,7 +56,7 @@ public class PollService : IPollService
         {
             var createdPoll = _context.Polls.Add(poll);
             await _context.SaveChangesAsync();
-            //var allPolls = _pollUtils.GetAllPolls(_context);
+
             await _dweetService.PostPoll(poll);
             return createdPoll.Entity;
         }
