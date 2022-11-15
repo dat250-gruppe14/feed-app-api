@@ -31,13 +31,14 @@ public class DweetMessagingService : IDweetMessagingService
     public async Task<HttpResponseMessage> PostPoll(Poll poll, bool CountVotes = false)
     {
         PollWeb pw = _webMapper.MapPollToWeb(poll, null, CountVotes);
-        string PollEndpoint = _dweetThing + pw.Id.ToString();
+        string PollEndpoint = _dweetThing + pw.Pincode.ToString();
+
         //Post poll
         await _client.PostAsJsonAsync(
             PollEndpoint, pw);
 
         LogDweet LD = new LogDweet();
-        LD.url = _baseGetUrl + _dweetThing + pw.Id.ToString();
+        LD.url = _baseGetUrl + _dweetThing + pw.Pincode.ToString();
         LD.TimeStamp = DateTime.Now.ToUniversalTime();
 
         //Post Log
