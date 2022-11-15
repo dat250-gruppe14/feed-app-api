@@ -71,10 +71,10 @@ public class PollUtils : IPollUtils
 
     private Func<Poll, Guid, bool> YouOwnThePoll = (poll, userId) => poll.OwnerId == userId;
 
-    private bool PollIsActive(Poll poll)
+    public bool PollIsActive(Poll poll)
     {
         var pollHasStarted = poll.StartTime < DateTime.Now;
-        if (!pollHasStarted) return true;
+        if (!pollHasStarted) return false;
 
         var pollIsAlwaysOpen = poll.EndTime == null;
         if (pollIsAlwaysOpen) return true;

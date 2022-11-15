@@ -1,7 +1,10 @@
+using System.Net;
+using FeedApp.Api.Errors;
 using FeedApp.Api.Mappers;
 using FeedApp.Api.Models.Web;
 using FeedApp.Api.Services;
 using FeedApp.Api.Utils;
+using FeedApp.Common.Exceptions;
 using FeedApp.Common.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,13 +44,25 @@ public class DeviceController : ControllerBase
     public async Task<IActionResult> CreateDeviceVote([FromBody] DeviceVoteCreateRequest deviceCreateRequest)
     {
         var device = (Device) HttpContext.Items["device"]!;
-		if(device is null){
+		if (device is null) {
 		  return Unauthorized();
 		}
 
-        var deviceVote = await _deviceService.CreateDeviceVote(device, _webMapper.MapDevicVoteCreateRequestToInternal(deviceCreateRequest));
+        try
+        {
+            var deviceVote = await _deviceService.CreateDeviceVote(device,
+                _webMapper.MapDevicVoteCreateRequestToInternal(deviceCreateRequest));
+            return Ok(_webMapper.MapDeviceToWeb(deviceVote.Device!, deviceVote.Device!.UserId));
+        }
+        catch (NotAllowedException e)
+        {
+            return BadRequest(new ApiErrorResponse
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = e.Message
+            });
+        }
 
-        return Ok(_webMapper.MapDeviceToWeb(deviceVote.Device!, deviceVote.Device!.UserId));
     }
 }
 

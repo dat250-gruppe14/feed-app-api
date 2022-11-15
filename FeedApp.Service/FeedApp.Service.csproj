@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FeedApp.Api\FeedApp.Api.csproj" />
+    <ProjectReference Include="..\FeedApp.Messaging\FeedApp.Messaging.csproj" />
   </ItemGroup>
 
 </Project>
