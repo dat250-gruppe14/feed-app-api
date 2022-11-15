@@ -52,6 +52,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IVoteService, VoteService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDeviceManagerService, DeviceManagerService>();
+builder.Services.AddScoped<IDweetMessagingService, DweetMessagingService>();
 
 // Mappers
 builder.Services.AddScoped<IWebMapper, WebMapper>();
