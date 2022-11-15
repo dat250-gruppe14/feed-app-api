@@ -7,7 +7,6 @@ using FeedApp.Api.Utils;
 using FeedApp.Common.Exceptions;
 using FeedApp.Common.Enums;
 using FeedApp.Common.Models.Entities;
-using FeedApp.Messaging.Sender;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
@@ -24,20 +23,17 @@ public class PollController : ControllerBase
     private readonly IPollService _pollService;
     private readonly IWebMapper _webMapper;
     private readonly IAuthUtils _authUtils;
-    private readonly IPollExpiredSender _pollExpiredSender;
 
     public PollController(
 	    ILogger<PollController> logger,
 	    IPollService pollService,
 	    IWebMapper webMapper,
-	    IAuthUtils authUtils,
-        IPollExpiredSender pollExpiredSender)
+	    IAuthUtils authUtils)
     {
         _logger = logger;
         _pollService = pollService;
         _webMapper = webMapper;
         _authUtils = authUtils;
-        _pollExpiredSender = pollExpiredSender;
     }
 
     [HttpGet(Name = "GetPolls")]
@@ -76,7 +72,6 @@ public class PollController : ControllerBase
 	    {
 			var currentUser = _authUtils.GetLoggedInUserFromHttpContext(HttpContext);
 	        var poll = await _pollService.CreatePoll(_webMapper.MapPollCreateRequestToInternal(pollCreateRequest), currentUser);
-            _pollExpiredSender.SendPoll(_webMapper.MapPollToPublish(poll));
 	        return Ok(_webMapper.MapPollToWeb(poll, null, false));
 	    }
 	    catch (EfCoreException e)
